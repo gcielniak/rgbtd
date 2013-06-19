@@ -7,7 +7,7 @@ obj/
 .DS_Store
 Debug/
 Release/
-images/
+data/
 *.dll
 *.lib
 *.ncb

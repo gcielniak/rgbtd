@@ -122,14 +122,14 @@ namespace LinLib
 		}
 	};
 
-	class CDTEmulator : public CDTSensor
+	class CDTFile : public CDTSensor
 	{
 		string path;
 		int reading_step, recording_step, recording_step_skip;
 		int skip_frames, skip_out_of_frames;
 
 	public:
-		CDTEmulator() : CDTSensor()
+		CDTFile() : CDTSensor()
 		{
 			reading_step = 0;
 			recording_step = 0;
@@ -160,18 +160,24 @@ namespace LinLib
 
 			if (use_color)
 			{
-				sprintf_s(file_name, "%scolor%05d.png", path.c_str(), reading_step);
-				color_frame = cv::imread(file_name);
+				sprintf_s(file_name, "color%05d.png", reading_step);
+				color_frame = cv::imread(path + file_name);
+				if (!color_frame.data)
+					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_depth)
 			{
-				sprintf_s(file_name, "%sdepth%05d.png", path.c_str(), reading_step);
-				depth_frame = cv::imread(file_name);
+				sprintf_s(file_name, "depth%05d.png", reading_step);
+				depth_frame = cv::imread(path + file_name);
+				if (!depth_frame.data)
+					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_thermal)
 			{
-				sprintf_s(file_name, "%sthermal%05d.png", path.c_str(), reading_step);
-				thermal_frame = cv::imread(file_name);
+				sprintf_s(file_name, "thermal%05d.png", reading_step);
+				thermal_frame = cv::imread(path + file_name);
+				if (!thermal_frame.data)
+					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 
 			BufferFrames();
@@ -184,14 +190,41 @@ namespace LinLib
 			char file_name[256];
 
 			int skip_steps = (recording_step % skip_out_of_frames);
-			if (skip_frames >= skip_steps)
+			if (skip_steps >= skip_frames)
 			{
-				sprintf_s(file_name, "%scolor%05d.png", path.c_str(), recording_step_skip);
-				cv::imwrite(file_name, color_image);
-				sprintf_s(file_name, "%sdepth%05d.png", path.c_str(), recording_step_skip);
-				cv::imwrite(file_name, depth_image);
-				sprintf_s(file_name, "%sthermal%05d.png", path.c_str(), recording_step_skip);
-				cv::imwrite(file_name, thermal_image);
+				sprintf_s(file_name, "color%05d.png", recording_step_skip);
+				cv::imwrite(path + file_name, color_image);
+				sprintf_s(file_name, "depth%05d.png", recording_step_skip);
+				cv::imwrite(path + file_name, depth_image);
+				sprintf_s(file_name, "thermal%05d.png", recording_step_skip);
+				cv::imwrite(path + file_name, thermal_image);
+				recording_step_skip++;
+			}
+			recording_step++;
+		}
+
+		void SaveFeatures(const cv::Mat& color_feature, const cv::Mat& depth_feature, const cv::Mat& thermal_feature)
+		{
+			char file_name[256];
+			cv::FileStorage file_storage;
+
+			int skip_steps = (recording_step % skip_out_of_frames);
+			if (skip_steps >= skip_frames)
+			{
+				sprintf_s(file_name, "%scolor%05d.xml", path.c_str(), recording_step_skip);
+				file_storage.open(file_name, cv::FileStorage::WRITE);
+				file_storage << "color" << color_feature;
+				file_storage.release();
+
+				sprintf_s(file_name, "%sdepth%05d.xml", path.c_str(), recording_step_skip);
+				file_storage.open(file_name, cv::FileStorage::WRITE);
+				file_storage << "depth" << depth_feature;
+				file_storage.release();
+
+				sprintf_s(file_name, "%sthermal%05d.xml", path.c_str(), recording_step_skip);
+				file_storage.open(file_name, cv::FileStorage::WRITE);
+				file_storage << "thermal" << thermal_feature;
+				file_storage.release();
 				recording_step_skip++;
 			}
 			recording_step++;
