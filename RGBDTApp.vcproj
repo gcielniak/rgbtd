@@ -21,6 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			UseOfATL="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -41,11 +42,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files\opencv\3rdparty\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files\opencv\3rdparty\include&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -63,8 +64,9 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib videoInput.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;"
-				IgnoreDefaultLibraryNames="atlthunk.lib"
+				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;$(ProjectDir)\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="atlthunk; libcmt"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -118,9 +120,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files\opencv\3rdparty\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files\opencv\3rdparty\include&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="1"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -139,8 +141,8 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenNI2.lib opencv_core245.lib opencv_highgui245.lib opencv_imgproc245.lib videoInput.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;"
-				IgnoreDefaultLibraryNames="atlthunk.lib"
+				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;$(ProjectDir)\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
+				IgnoreDefaultLibraryNames="atlthunk; libcmt;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -179,7 +181,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\RGBDTApp.cpp"
+				RelativePath=".\src\RGBDTApp.cpp"
 				>
 			</File>
 		</Filter>
@@ -189,27 +191,27 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Camera.h"
+				RelativePath=".\src\Camera.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CDTSensor.h"
+				RelativePath=".\src\CDTSensor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Exception.h"
+				RelativePath=".\src\Exception.h"
 				>
 			</File>
 			<File
-				RelativePath=".\LBPFeature.h"
+				RelativePath=".\src\LBPFeature.h"
 				>
 			</File>
 			<File
-				RelativePath=".\OpenNICamera.h"
+				RelativePath=".\src\OpenNICamera.h"
 				>
 			</File>
 			<File
-				RelativePath=".\videoInput.h"
+				RelativePath=".\src\videoInput.h"
 				>
 			</File>
 		</Filter>

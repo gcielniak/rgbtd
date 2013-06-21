@@ -1,5 +1,9 @@
 #pragma once
 
+#include <sstream>
+#include <iomanip>
+#include <boost/filesystem.hpp>
+
 namespace LinLib
 {
 	class CDTSensor
@@ -134,7 +138,7 @@ namespace LinLib
 			reading_step = 0;
 			recording_step = 0;
 			recording_step_skip = 0;
-			skip_frames = 1;
+			skip_frames = 0;
 			skip_out_of_frames = 1;
 			path = "";
 		}
@@ -156,26 +160,24 @@ namespace LinLib
 
 		virtual void GrabAllImages()
 		{
-			char file_name[256];
+			std::stringstream s;
+			s << std::setw(5) << std::setfill('0') << reading_step;
 
 			if (use_color)
 			{
-				sprintf_s(file_name, "color%05d.png", reading_step);
-				color_frame = cv::imread(path + file_name);
+				color_frame = cv::imread(path + "color" + s.str() + ".png");
 				if (!color_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_depth)
 			{
-				sprintf_s(file_name, "depth%05d.png", reading_step);
-				depth_frame = cv::imread(path + file_name);
+				depth_frame = cv::imread(path + "depth" + s.str() + ".png");
 				if (!depth_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_thermal)
 			{
-				sprintf_s(file_name, "thermal%05d.png", reading_step);
-				thermal_frame = cv::imread(path + file_name);
+				thermal_frame = cv::imread(path + "thermal" + s.str() + ".png");
 				if (!thermal_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
@@ -187,17 +189,17 @@ namespace LinLib
 
 		void SaveImages(const cv::Mat& color_image, const cv::Mat& depth_image, const cv::Mat& thermal_image)
 		{
-			char file_name[256];
+			if (!boost::filesystem::exists(boost::filesystem::path(path)))
+				boost::filesystem::create_directories(boost::filesystem::path(path));
 
 			int skip_steps = (recording_step % skip_out_of_frames);
 			if (skip_steps >= skip_frames)
 			{
-				sprintf_s(file_name, "color%05d.png", recording_step_skip);
-				cv::imwrite(path + file_name, color_image);
-				sprintf_s(file_name, "depth%05d.png", recording_step_skip);
-				cv::imwrite(path + file_name, depth_image);
-				sprintf_s(file_name, "thermal%05d.png", recording_step_skip);
-				cv::imwrite(path + file_name, thermal_image);
+				std::stringstream s;
+				s << std::setw(5) << std::setfill('0') << recording_step_skip;
+				cv::imwrite(path + "color" + s.str() + ".png", color_image);
+				cv::imwrite(path + "depth" + s.str() + ".png", depth_image);
+				cv::imwrite(path + "thermal" + s.str() + ".png", thermal_image);
 				recording_step_skip++;
 			}
 			recording_step++;
@@ -205,24 +207,26 @@ namespace LinLib
 
 		void SaveFeatures(const cv::Mat& color_feature, const cv::Mat& depth_feature, const cv::Mat& thermal_feature)
 		{
-			char file_name[256];
+			if (!boost::filesystem::exists(boost::filesystem::path(path)))
+				boost::filesystem::create_directories(boost::filesystem::path(path));
+
 			cv::FileStorage file_storage;
 
 			int skip_steps = (recording_step % skip_out_of_frames);
 			if (skip_steps >= skip_frames)
 			{
-				sprintf_s(file_name, "%scolor%05d.xml", path.c_str(), recording_step_skip);
-				file_storage.open(file_name, cv::FileStorage::WRITE);
+				std::stringstream s;
+				s << std::setw(5) << std::setfill('0') << recording_step_skip;
+
+				file_storage.open(path + "color" + s.str() + ".xml", cv::FileStorage::WRITE);
 				file_storage << "color" << color_feature;
 				file_storage.release();
 
-				sprintf_s(file_name, "%sdepth%05d.xml", path.c_str(), recording_step_skip);
-				file_storage.open(file_name, cv::FileStorage::WRITE);
+				file_storage.open(path + "depth" + s.str() + ".xml", cv::FileStorage::WRITE);
 				file_storage << "depth" << depth_feature;
 				file_storage.release();
 
-				sprintf_s(file_name, "%sthermal%05d.xml", path.c_str(), recording_step_skip);
-				file_storage.open(file_name, cv::FileStorage::WRITE);
+				file_storage.open(path + "thermal" + s.str() + ".xml", cv::FileStorage::WRITE);
 				file_storage << "thermal" << thermal_feature;
 				file_storage.release();
 				recording_step_skip++;
