@@ -1,41 +1,29 @@
 % test reading opencv files
 
+
 step = 0;
-data_set = '..\\data\\data_set_1\\';
+data_set = '..\\Debug\\data\\dataset_20130621T171958\\images\\';
+%data_set = '..\\Debug\\data\\dataset_20130624T095243\\images\\';
+C = imcrop(rgb2gray(imread(strcat(data_set,'thermal02050.png'))),[0 0 640 440]);
+D = imcrop(rgb2gray(imread('..\\Debug\\data\\dataset_20130621T171958\\images\\thermal02050.png')),[0 0 640 440]);
+CF = fft2(C);
+CCF = log(abs(fftshift(CF)));
 
-classes = read_class_int(sprintf('%sclasses.txt', data_set));
+%for i = 1:1:200
+LPF_ideal=lpfilter('ideal', size(C,1), size(C,2), 300);
+HPF_ideal=hpfilter('ideal', size(C,1), size(C,2), 150);
+filter = 1 - LPF_ideal.*HPF_ideal;
+%filter = HPF_ideal;
+FRES = CF.*filter;
 
-while 1
-    file_name_color = sprintf('%sfeatures\\color%05d.xml', data_set, step);
-    file_name_depth = sprintf('%sfeatures\\depth%05d.xml', data_set, step);
-    file_name_thermal = sprintf('%sfeatures\\thermal%05d.xml', data_set, step);
-   
-    if isempty(classes)
-        file_name_class = sprintf('%sclasses\\class%05d.txt', data_set, step);
-        if ~exist(file_name_class,'file')
-            break;
-        end
-        class = read_class(file_name_class);    
-    elseif step < length(classes)
-        class = classes(step+1);
-    else
-        break;
-    end
-    
-    
-    if ~exist(file_name_color,'file') | ~exist(file_name_depth,'file') | ~exist(file_name_thermal,'file')
-        break;
-    end
-    
-    A = opencv_read(file_name_color);
-    B = opencv_read(file_name_depth);
-    C = opencv_read(file_name_thermal);
-    
-    class
-    
-    subplot(1,3,1); stem(A);
-    subplot(1,3,2); stem(B);
-    subplot(1,3,3); stem(C);
-    step = step + 1;
-    pause(0.1);
-end
+RES = ifft2(FRES);
+
+subplot(2,2,1), imshow(C);
+subplot(2,2,2), imagesc(fftshift(filter));
+subplot(2,2,3), imagesc(RES, [0 256]); colormap('gray');
+%subplot(2,2,3), imagesc(RES, [0 10]); colormap('gray');
+subplot(2,2,4), imagesc(CCF);
+i
+%pause(0.1)
+%end
+

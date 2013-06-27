@@ -8,12 +8,12 @@
 
 using namespace std;
 
-// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+// Get current date/time, format is YYYYMMDDTHHmmss
 const std::string currentDateTime() {
     time_t     now = time(0);
     struct tm  tstruct;
     char       buf[80];
-    tstruct = *localtime(&now);
+	localtime_s(&tstruct, &now);
     strftime(buf, sizeof(buf), "%Y%m%dT%H%M%S", &tstruct);
     return buf;
 }
@@ -22,8 +22,9 @@ void print_help()
 {
 	cerr << "CDTApp usage:" << endl;
 
-	cerr << " -ip : specify input data path (use instead of the real sensor input)" << endl;
-	cerr << " -op : specify output data path [deafult: .\\data\\dataset_xxx]" << endl;
+	cerr << " -ip : input data path (use instead of the real sensor input)" << endl;
+	cerr << " -td : thermal device" << endl;
+	cerr << " -op : output data path [deafult: .\\data\\dataset_xxx]" << endl;
 	cerr << " -si : save images" << endl;
 	cerr << " -sf : save features" << endl;
 	cerr << " -pd : pyramid depth [deafult: 0]" << endl;
@@ -42,6 +43,8 @@ int main(int argc, char **argv)
 	bool show_feature_images = false;
 	bool use_color = true, use_depth = true, use_thermal = true;
 	int pyramid_depth = 0;
+	int thermal_device = -1;
+
 	LinLib::CDTFile image_writer, feature_writer;
 
 	if (argc == 1)
@@ -54,6 +57,7 @@ int main(int argc, char **argv)
 	{
 		if ((strcmp(argv[i],"-ip")==0) && (i < (argc-1))) { input_data_path = argv[++i]; }
 		else if ((strcmp(argv[i],"-op")==0) && (i < (argc-1))) { output_data_path = argv[++i]; }
+		else if ((strcmp(argv[i],"-td")==0) && (i < (argc-1))) { thermal_device = atoi(argv[++i]); }
 		else if ((strcmp(argv[i],"-pd")==0) && (i < (argc-1))) { pyramid_depth = atoi(argv[++i]); }
 		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
 		else if (strcmp(argv[i],"-sf")==0) { save_features = true; }
@@ -79,6 +83,7 @@ int main(int argc, char **argv)
 	else // use sensor
 	{
 		input_device = new LinLib::CDTDevice();
+		input_device->ThermalDevice(thermal_device);
 	}
 
 	image_writer.Path(output_data_path + "images\\");

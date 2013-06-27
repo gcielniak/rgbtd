@@ -13,6 +13,7 @@ namespace LinLib
 		bool use_color, use_depth, use_thermal;
 		std::list<cv::Mat> color_buffer, depth_buffer, thermal_buffer;
 		unsigned int color_delay, depth_delay, thermal_delay;
+		int thermal_device;
 
 		void BufferFrames()
 		{
@@ -62,7 +63,7 @@ namespace LinLib
 	public:
 		CDTSensor()
 			: use_color(true), use_depth(true), use_thermal(true),
-		color_delay(0), depth_delay(0), thermal_delay(0) {}
+		color_delay(0), depth_delay(0), thermal_delay(0), thermal_device(-1) {}
 
 		virtual void Init() {}
 
@@ -84,20 +85,22 @@ namespace LinLib
 		cv::Mat &ColorFrame() { return color_frame; }
 		cv::Mat &DepthFrame() { return depth_frame; }
 		cv::Mat &ThermalFrame() { return thermal_frame; }
+
+		void ThermalDevice(int value) { thermal_device = value; }
+		int ThermalDevice() { return thermal_device; }
 	};
 
 	class CDTDevice : public CDTSensor
 	{
 		LinLib::OpenNICamera kinect_camera;
-		#if WIN32
-			LinLib::WinCamera thermal_camera;
-		#else
-			LinLib::Camera thermal_camera;
-		#endif
+		LinLib::Camera thermal_camera;
 
 	public:
 		virtual void Init()
 		{
+			if (use_thermal)
+				thermal_camera.Open(thermal_device);
+
 			if (use_color || use_depth)
 			{
 				kinect_camera.Open();
@@ -106,9 +109,6 @@ namespace LinLib
 				if (use_depth)
 					kinect_camera.DepthStream->Start();
 			}
-
-			if (use_thermal)
-				thermal_camera.Open();
 		}
 
 		virtual void GrabAllImages()
