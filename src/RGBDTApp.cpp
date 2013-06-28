@@ -1,5 +1,5 @@
-#include <ctime>
 #include <iostream>
+#include <boost/date_time.hpp>
 
 #include "OpenNICamera.h"
 #include "Camera.h"
@@ -7,15 +7,15 @@
 #include "CDTSensor.h"
 
 using namespace std;
+//using namespace boost::posix_time;
 
 // Get current date/time, format is YYYYMMDDTHHmmss
-const std::string currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-	localtime_s(&tstruct, &now);
-    strftime(buf, sizeof(buf), "%Y%m%dT%H%M%S", &tstruct);
-    return buf;
+const std::string currentDateTime()
+{
+	ostringstream ss;
+	ss.imbue(std::locale(ss.getloc(), new boost::posix_time::time_facet("%Y%m%dT%H%M%S")));
+	ss << boost::posix_time::second_clock::local_time();
+	return ss.str();
 }
 
 void print_help()
@@ -31,6 +31,8 @@ void print_help()
 	cerr << " -sk : skip x out of xx frame when writing [deafult: 1 1]" << endl;
 	cerr << " -vi : visualise images" << endl;
 	cerr << " -vf : visualise features" << endl;
+	cerr << " -sf : start frame" << endl;
+	cerr << " -ef : end frame" << endl;
 }
 
 int main(int argc, char **argv)
@@ -44,6 +46,7 @@ int main(int argc, char **argv)
 	bool use_color = true, use_depth = true, use_thermal = true;
 	int pyramid_depth = 0;
 	int thermal_device = -1;
+	int start_frame = 0, end_frame = -1;
 
 	LinLib::CDTFile image_writer, feature_writer;
 
@@ -59,6 +62,8 @@ int main(int argc, char **argv)
 		else if ((strcmp(argv[i],"-op")==0) && (i < (argc-1))) { output_data_path = argv[++i]; }
 		else if ((strcmp(argv[i],"-td")==0) && (i < (argc-1))) { thermal_device = atoi(argv[++i]); }
 		else if ((strcmp(argv[i],"-pd")==0) && (i < (argc-1))) { pyramid_depth = atoi(argv[++i]); }
+		else if ((strcmp(argv[i],"-sf")==0) && (i < (argc-1))) { start_frame = atoi(argv[++i]); }
+		else if ((strcmp(argv[i],"-ef")==0) && (i < (argc-1))) { end_frame = atoi(argv[++i]); }
 		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
 		else if (strcmp(argv[i],"-sf")==0) { save_features = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
@@ -79,6 +84,8 @@ int main(int argc, char **argv)
 	{
 		input_device = new LinLib::CDTFile();
 		((LinLib::CDTFile*)input_device)->Path(input_data_path + "images\\");
+		((LinLib::CDTFile*)input_device)->StartFrame(start_frame);
+		((LinLib::CDTFile*)input_device)->EndFrame(end_frame);
 	}
 	else // use sensor
 	{

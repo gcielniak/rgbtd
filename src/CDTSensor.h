@@ -131,6 +131,7 @@ namespace LinLib
 		string path;
 		int reading_step, recording_step, recording_step_skip;
 		int skip_frames, skip_out_of_frames;
+		int start_frame, end_frame;
 
 	public:
 		CDTFile() : CDTSensor()
@@ -140,6 +141,8 @@ namespace LinLib
 			recording_step_skip = 0;
 			skip_frames = 0;
 			skip_out_of_frames = 1;
+			start_frame = 0;
+			end_frame = -1;
 			path = "";
 		}
 
@@ -147,6 +150,10 @@ namespace LinLib
 		int SkipFrames() { return skip_frames; }
 		void SkipOutOfFrames(int value) { skip_out_of_frames = value; }
 		int SkipOutOfFrames() { return skip_out_of_frames; }
+		void StartFrame(int value) { start_frame = value; reading_step = start_frame; }
+		int StartFrame() { return start_frame; }
+		void EndFrame(int value) { end_frame = value; }
+		int EndFrame() { return end_frame; }
 
 		void Path(string value)
 		{
@@ -160,6 +167,9 @@ namespace LinLib
 
 		virtual void GrabAllImages()
 		{
+			if ((end_frame != -1) && (reading_step >= end_frame))
+				throw new Exception("CDTFile::GrabAllImages, reached the end frame.");;
+
 			std::stringstream s;
 			s << std::setw(5) << std::setfill('0') << reading_step;
 
