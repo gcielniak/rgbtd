@@ -6,6 +6,7 @@
 
 namespace LinLib
 {
+	/// Color-depth-thermal sensor interface.
 	class CDTSensor
 	{
 	protected:
@@ -15,6 +16,7 @@ namespace LinLib
 		unsigned int color_delay, depth_delay, thermal_delay;
 		int thermal_device;
 
+		/// Buffer current frames - implements a frame delay for each sensor type
 		void BufferFrames()
 		{
 			if (use_color)
@@ -63,15 +65,22 @@ namespace LinLib
 	public:
 		CDTSensor()
 			: use_color(true), use_depth(true), use_thermal(true),
-		color_delay(0), depth_delay(0), thermal_delay(0), thermal_device(-1) {}
+			color_delay(0), depth_delay(0), thermal_delay(0), thermal_device(-1) {}
 
+		/// Init sensor
 		virtual void Init() {}
 
+		/// Use color stream (set)
 		void UseColor(bool value) { use_color = value; }
+		/// Use color stream (get)
 		bool UseColor() { return use_color; }
+		/// Use depth stream (set)
 		void UseDepth(bool value) { use_depth = value; }
+		/// Use depth stream (get)
 		bool UseDepth() { return use_depth; }
+		/// Use thermal stream (set)
 		void UseThermal(bool value) { use_thermal = value; }
+		/// Use thermal stream (get)
 		bool UseThermal() { return use_thermal; }
 
 		void ColorDelay(unsigned int value) { color_delay = value; }
@@ -90,6 +99,7 @@ namespace LinLib
 		int ThermalDevice() { return thermal_device; }
 	};
 
+	/// Color-depth-thermal sensor device.
 	class CDTDevice : public CDTSensor
 	{
 		LinLib::OpenNICamera kinect_camera;
@@ -108,7 +118,8 @@ namespace LinLib
 					kinect_camera.ColorStream->Start();
 				if (use_depth)
 					kinect_camera.DepthStream->Start();
-			}
+				kinect_camera.ListModes();
+			}			
 		}
 
 		virtual void GrabAllImages()
@@ -126,6 +137,7 @@ namespace LinLib
 		}
 	};
 
+	/// Color-depth-thermal sensor file emulator.
 	class CDTFile : public CDTSensor
 	{
 		string path;
@@ -207,9 +219,12 @@ namespace LinLib
 			{
 				std::stringstream s;
 				s << std::setw(5) << std::setfill('0') << recording_step_skip;
-				cv::imwrite(path + "color" + s.str() + ".png", color_image);
-				cv::imwrite(path + "depth" + s.str() + ".png", depth_image);
-				cv::imwrite(path + "thermal" + s.str() + ".png", thermal_image);
+				if (color_image.data)
+					cv::imwrite(path + "color" + s.str() + ".png", color_image);
+				if (depth_image.data)
+					cv::imwrite(path + "depth" + s.str() + ".png", depth_image);
+				if (thermal_image.data)
+					cv::imwrite(path + "thermal" + s.str() + ".png", thermal_image);
 				recording_step_skip++;
 			}
 			recording_step++;
@@ -228,17 +243,27 @@ namespace LinLib
 				std::stringstream s;
 				s << std::setw(5) << std::setfill('0') << recording_step_skip;
 
-				file_storage.open(path + "color" + s.str() + ".xml", cv::FileStorage::WRITE);
-				file_storage << "color" << color_feature;
-				file_storage.release();
+				if (color_feature.data)
+				{
+					file_storage.open(path + "color" + s.str() + ".xml", cv::FileStorage::WRITE);
+					file_storage << "color" << color_feature;
+					file_storage.release();
+				}
 
-				file_storage.open(path + "depth" + s.str() + ".xml", cv::FileStorage::WRITE);
-				file_storage << "depth" << depth_feature;
-				file_storage.release();
+				if (depth_feature.data)
+				{
+					file_storage.open(path + "depth" + s.str() + ".xml", cv::FileStorage::WRITE);
+					file_storage << "depth" << depth_feature;
+					file_storage.release();
+				}
 
-				file_storage.open(path + "thermal" + s.str() + ".xml", cv::FileStorage::WRITE);
-				file_storage << "thermal" << thermal_feature;
-				file_storage.release();
+				if (thermal_feature.data)
+				{
+					file_storage.open(path + "thermal" + s.str() + ".xml", cv::FileStorage::WRITE);
+					file_storage << "thermal" << thermal_feature;
+					file_storage.release();
+				}
+
 				recording_step_skip++;
 			}
 			recording_step++;

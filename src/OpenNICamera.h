@@ -10,6 +10,7 @@ namespace LinLib
 	using namespace std;
 	using namespace openni;
 
+	/// OpenNI Stream class providing color, depth and ir data
 	class Stream
 	{
 		const Device *device;
@@ -19,6 +20,7 @@ namespace LinLib
 		bool running;
 	
 	public:
+		/// Constructor
 		Stream(const openni::Device *_device, SensorType type)
 		{
 			running = false;
@@ -27,12 +29,14 @@ namespace LinLib
 				throw new Exception("OpenNICamera::Init: " + string(OpenNI::getExtendedError()));
 		}
 
+		/// Destructor
 		~Stream()
 		{
 			Stop();
 			stream.destroy();
 		}
 
+		/// Start streaming
 		void Start()
 		{
 			running = true;
@@ -40,11 +44,14 @@ namespace LinLib
 				throw new Exception("OpenNICamera::Init: " + string(OpenNI::getExtendedError()));
 		}
 
+		/// Stop streaming
 		void Stop()
 		{
 			if (running)
 				stream.stop();
 		}
+
+		/// Get image in OpenCV format
 
 		cv::Mat GetFrame()
 		{
@@ -52,6 +59,7 @@ namespace LinLib
 
 			stream.readFrame(&frame_ref);
 
+			// perform format conversion
 			switch (stream.getVideoMode().getPixelFormat())
 			{
 				case PIXEL_FORMAT_YUV422:
@@ -82,6 +90,8 @@ namespace LinLib
 		}
 	};
 
+
+	/// Range camera class using OpenNI interface
 	class OpenNICamera
 	{
 		Device device;
@@ -89,6 +99,7 @@ namespace LinLib
 		Status result;
 		static int number_of_devices;
 
+		/// Framework initialisation (executed only once)
 		static void Init()
 		{
 			if (!number_of_devices) //do it only once
@@ -100,18 +111,20 @@ namespace LinLib
 		}
 	
 	public:
-		///Constructor
+		/// Default constructor
 		OpenNICamera()
 		{
 			Init();
 		}
 
+		/// Constructor
 		OpenNICamera(int device_nr)
 		{
 			Init();
 			Open(device_nr);
 		}
 
+		/// Destructor
 		~OpenNICamera()
 		{
 			Close();
@@ -120,6 +133,7 @@ namespace LinLib
 				OpenNI::shutdown();
 		}
 
+		/// Close the streams and device
 		void Close()
 		{
 			delete ColorStream;
@@ -128,6 +142,7 @@ namespace LinLib
 			device.close();
 		}
 
+		/// Open a specified device
 		void Open(int device_nr=-1)
 		{
 			Array<DeviceInfo> device_list;
@@ -149,11 +164,65 @@ namespace LinLib
 			IrStream = new Stream(&device, SENSOR_IR);
 		}
 
+		/// List number of devices
 		static int NumberOfDevices()
 		{
 			Array<DeviceInfo> device_list;
 			OpenNI::enumerateDevices(&device_list);
 			return device_list.getSize();
+		}
+
+		/// Get device name and vendor
+		string DeviceName()
+		{
+			const DeviceInfo info = device.getDeviceInfo();
+			return (string(info.getName()) + " (" + string(info.getVendor()) + ")");
+		}
+
+		static string PixelFormatString(PixelFormat format)
+		{
+			switch (format)
+			{
+			case PIXEL_FORMAT_DEPTH_1_MM: return "DEPTH_1_MM";
+			case PIXEL_FORMAT_DEPTH_100_UM: return "DEPTH_100_UM";
+			case PIXEL_FORMAT_SHIFT_9_2: return "SHIFT_9_2";
+			case PIXEL_FORMAT_SHIFT_9_3: return "SHIFT_9_3";
+			case PIXEL_FORMAT_RGB888: return "RGB888";
+			case PIXEL_FORMAT_YUV422: return "YUV422";
+			case PIXEL_FORMAT_GRAY8: return "GRAY8";
+			case PIXEL_FORMAT_GRAY16: return "GRAY16";
+			case PIXEL_FORMAT_JPEG: return "JPEG";
+			case PIXEL_FORMAT_YUYV: return "YUYV";
+			default: return "NOT SUPPORTED";
+			}
+		}
+
+		static void SensorInfoString(const SensorInfo* info)
+		{
+			const Array<VideoMode>& modes = info->getSupportedVideoModes();
+			for (int i = 0; i < modes.getSize(); i++)
+			{
+				cerr << "[" << i << "] ";
+				cerr << modes[i].getFps() << " FPS, ";
+				cerr << PixelFormatString(modes[i].getPixelFormat()) << ", ";
+				cerr << modes[i].getResolutionX() << "x" << modes[i].getResolutionY() << endl;
+			}
+		}
+
+		void ListModes()
+		{
+			cerr << device.isImageRegistrationModeSupported(IMAGE_REGISTRATION_OFF) << endl;
+			cerr << device.isImageRegistrationModeSupported(IMAGE_REGISTRATION_DEPTH_TO_COLOR) << endl;
+			cerr << device.getDepthColorSyncEnabled() << endl;
+			device.setDepthColorSyncEnabled(true);
+			cerr << device.getDepthColorSyncEnabled() << endl;
+
+			cerr << "Color sensor modes" << endl;
+			SensorInfoString(device.getSensorInfo(SENSOR_COLOR));
+			cerr << "Depth sensor modes" << endl;
+			SensorInfoString(device.getSensorInfo(SENSOR_DEPTH));
+			cerr << "IR sensor modes" << endl;
+			SensorInfoString(device.getSensorInfo(SENSOR_IR));
 		}
 
 		Stream *ColorStream;

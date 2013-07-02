@@ -33,6 +33,9 @@ void print_help()
 	cerr << " -vf : visualise features" << endl;
 	cerr << " -sf : start frame" << endl;
 	cerr << " -ef : end frame" << endl;
+	cerr << " -co : color off" << endl;
+	cerr << " -do : depth off" << endl;
+	cerr << " -to : thermal off" << endl;
 	//additional line
 }
 
@@ -69,6 +72,9 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i],"-sf")==0) { save_features = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
 		else if (strcmp(argv[i],"-vf")==0) { show_feature_images = true; }
+		else if (strcmp(argv[i],"-co")==0) { use_color = false; }
+		else if (strcmp(argv[i],"-do")==0) { use_depth = false; }
+		else if (strcmp(argv[i],"-to")==0) { use_thermal = false; }
 		else if (strcmp(argv[i],"-h")==0)	{ print_help();	}
 		else if ((strcmp(argv[i],"-sk")==0) && (i < (argc-2))) 
 		{
@@ -94,6 +100,10 @@ int main(int argc, char **argv)
 		input_device->ThermalDevice(thermal_device);
 	}
 
+	input_device->UseColor(use_color);
+	input_device->UseDepth(use_depth);
+	input_device->UseThermal(use_thermal);
+
 	image_writer.Path(output_data_path + "images\\");
 	feature_writer.Path(output_data_path + "features\\");
 
@@ -115,16 +125,22 @@ int main(int argc, char **argv)
 
 		if (show_images)
 		{
-			cv::imshow("color", input_device->ColorFrame());
-			cv::imshow("depth", input_device->DepthFrame()*65535/10000);
-			cv::imshow("thermal", input_device->ThermalFrame());
+			if (input_device->ColorFrame().data)
+				cv::imshow("color", input_device->ColorFrame());
+			if (input_device->DepthFrame().data)
+				cv::imshow("depth", input_device->DepthFrame()*65535/10000);
+			if (input_device->ThermalFrame().data)
+				cv::imshow("thermal", input_device->ThermalFrame());
 		}
 
 		if (show_feature_images)
 		{
-			cv::imshow("color feature image", feature.GetFeatureImage(input_device->ColorFrame()));
-			cv::imshow("depth feature image", feature.GetFeatureImage(input_device->DepthFrame()));
-			cv::imshow("thermal feature image", feature.GetFeatureImage(input_device->ThermalFrame()));
+			if (input_device->ColorFrame().data)
+				cv::imshow("color feature image", feature.GetFeatureImage(input_device->ColorFrame()));
+			if (input_device->DepthFrame().data)
+				cv::imshow("depth feature image", feature.GetFeatureImage(input_device->DepthFrame()));
+			if (input_device->ThermalFrame().data)
+				cv::imshow("thermal feature image", feature.GetFeatureImage(input_device->ThermalFrame()));
 		}
 
 	}
