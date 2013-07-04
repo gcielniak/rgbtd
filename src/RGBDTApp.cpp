@@ -31,8 +31,8 @@ void print_help()
 	cerr << " -sk : skip x out of xx frame when writing [deafult: 1 1]" << endl;
 	cerr << " -vi : visualise images" << endl;
 	cerr << " -vf : visualise features" << endl;
-	cerr << " -sf : start frame" << endl;
-	cerr << " -ef : end frame" << endl;
+	cerr << " -fs : start frame" << endl;
+	cerr << " -fe : end frame" << endl;
 	cerr << " -co : color off" << endl;
 	cerr << " -do : depth off" << endl;
 	cerr << " -to : thermal off" << endl;
@@ -66,8 +66,8 @@ int main(int argc, char **argv)
 		else if ((strcmp(argv[i],"-op")==0) && (i < (argc-1))) { output_data_path = argv[++i]; }
 		else if ((strcmp(argv[i],"-td")==0) && (i < (argc-1))) { thermal_device = atoi(argv[++i]); }
 		else if ((strcmp(argv[i],"-pd")==0) && (i < (argc-1))) { pyramid_depth = atoi(argv[++i]); }
-		else if ((strcmp(argv[i],"-sf")==0) && (i < (argc-1))) { start_frame = atoi(argv[++i]); }
-		else if ((strcmp(argv[i],"-ef")==0) && (i < (argc-1))) { end_frame = atoi(argv[++i]); }
+		else if ((strcmp(argv[i],"-fs")==0) && (i < (argc-1))) { start_frame = atoi(argv[++i]); }
+		else if ((strcmp(argv[i],"-fe")==0) && (i < (argc-1))) { end_frame = atoi(argv[++i]); }
 		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
 		else if (strcmp(argv[i],"-sf")==0) { save_features = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	if (input_data_path.compare("")!=0) //path speficied use images instead of the sensor
 	{
 		input_device = new LinLib::CDTFile();
-		((LinLib::CDTFile*)input_device)->Path(input_data_path + "images\\");
+		((LinLib::CDTFile*)input_device)->Path(input_data_path + "\\images\\");
 		((LinLib::CDTFile*)input_device)->StartFrame(start_frame);
 		((LinLib::CDTFile*)input_device)->EndFrame(end_frame);
 	}
@@ -104,8 +104,8 @@ int main(int argc, char **argv)
 	input_device->UseDepth(use_depth);
 	input_device->UseThermal(use_thermal);
 
-	image_writer.Path(output_data_path + "images\\");
-	feature_writer.Path(output_data_path + "features\\");
+	image_writer.Path(output_data_path + "\\images\\");
+	feature_writer.Path(output_data_path + "\\features\\");
 
 	LinLib::LBPFeature feature;
 	feature.BorderHandling(LinLib::BORDER_PADD);
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 			image_writer.SaveImages(input_device->ColorFrame(), input_device->DepthFrame(), input_device->ThermalFrame());
 
 		if (save_features)
-			feature_writer.SaveFeatures(feature.Get(input_device->ColorFrame(), pyramid_depth), feature.Get(input_device->DepthFrame(), pyramid_depth), feature.Get(input_device->ThermalFrame(), pyramid_depth));
+			feature_writer.SaveFeatures(feature.Get(input_device->ColorFrame(), pyramid_depth), feature.Get(input_device->DepthFrame(), pyramid_depth, 0), feature.Get(input_device->ThermalFrame(), pyramid_depth));
 
 		if (show_images)
 		{
