@@ -108,6 +108,7 @@ int main(int argc, char **argv)
 	feature_writer.Path(output_data_path + "features\\");
 
 	LinLib::LBPFeature feature;
+	feature.BorderHandling(LinLib::BORDER_PADD);
 
 	try { input_device->Init(); }
 	catch (LinLib::Exception*) { cerr << "Could not initialise the input device." << endl; exit(1); }
