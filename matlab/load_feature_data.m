@@ -1,5 +1,5 @@
 step = 0;
-data_set = 'D:\\data\\rgbdt\\dataset_20130627T164440\\';
+data_set = 'D:\\data\\dataset_20130704T164310\\';
 
 classes = read_class_int(sprintf('%sclasses.txt', data_set));
 my_data = [];
