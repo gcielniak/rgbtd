@@ -1,7 +1,7 @@
-load 'D:\data\dataset_20130627T164440\dataset_20130627';
+load 'D:\data\rgbdt\dataset_20130627T164440\dataset_20130627';
 
 %filter
-dataset = dataset_20130627(1:1000:end,1:258);
+dataset = dataset_20130627(1:10:end,1:258);
 
 %save
 fid = fopen('dataset_20130627.txt','w');
