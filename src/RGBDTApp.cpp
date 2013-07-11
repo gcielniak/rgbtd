@@ -113,6 +113,8 @@ int main(int argc, char **argv)
 	try { input_device->Init(); }
 	catch (LinLib::Exception*) { cerr << "Could not initialise the input device." << endl; exit(1); }
 
+	cv::Mat color_feature, depth_feature, thermal_feature;
+
 	while (cvWaitKey(1) != 27)
 	{
 		try { input_device->GrabAllImages(); }
@@ -122,7 +124,12 @@ int main(int argc, char **argv)
 			image_writer.SaveImages(input_device->ColorFrame(), input_device->DepthFrame(), input_device->ThermalFrame());
 
 		if (save_features)
-			feature_writer.SaveFeatures(feature.Get(input_device->ColorFrame(), pyramid_depth), feature.Get(input_device->DepthFrame(), pyramid_depth, 0), feature.Get(input_device->ThermalFrame(), pyramid_depth));
+		{
+			color_feature = feature.Get(input_device->ColorFrame(), pyramid_depth).clone();
+			depth_feature = feature.Get(input_device->DepthFrame(), pyramid_depth, 0).clone();
+			thermal_feature = feature.Get(input_device->ThermalFrame(), pyramid_depth).clone();
+			feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
+		}
 
 		if (show_images)
 		{
@@ -143,8 +150,9 @@ int main(int argc, char **argv)
 			if (input_device->ThermalFrame().data)
 				cv::imshow("thermal feature image", feature.GetFeatureImage(input_device->ThermalFrame()));
 		}
-
 	}
+
+	delete input_device;
 
 	return 0;
 }

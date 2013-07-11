@@ -113,12 +113,14 @@ namespace LinLib
 	public:
 		/// Default constructor
 		OpenNICamera()
+			: ColorStream(0), DepthStream(0), IrStream(0)
 		{
 			Init();
 		}
 
 		/// Constructor
 		OpenNICamera(int device_nr)
+			: ColorStream(0), DepthStream(0), IrStream(0)
 		{
 			Init();
 			Open(device_nr);
@@ -136,9 +138,9 @@ namespace LinLib
 		/// Close the streams and device
 		void Close()
 		{
-			delete ColorStream;
-			delete DepthStream;
-			delete IrStream;
+			if (ColorStream) delete ColorStream;
+			if (DepthStream) delete DepthStream;
+			if (IrStream) delete IrStream;
 			device.close();
 		}
 
@@ -211,12 +213,6 @@ namespace LinLib
 
 		void ListModes()
 		{
-			cerr << device.isImageRegistrationModeSupported(IMAGE_REGISTRATION_OFF) << endl;
-			cerr << device.isImageRegistrationModeSupported(IMAGE_REGISTRATION_DEPTH_TO_COLOR) << endl;
-			cerr << device.getDepthColorSyncEnabled() << endl;
-			device.setDepthColorSyncEnabled(true);
-			cerr << device.getDepthColorSyncEnabled() << endl;
-
 			cerr << "Color sensor modes" << endl;
 			SensorInfoString(device.getSensorInfo(SENSOR_COLOR));
 			cerr << "Depth sensor modes" << endl;

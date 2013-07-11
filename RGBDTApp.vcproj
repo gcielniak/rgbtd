@@ -220,7 +220,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245.lib opencv_highgui245.lib opencv_imgproc245.lib"
+				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245.lib opencv_imgproc245.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
 				IgnoreDefaultLibraryNames=""
