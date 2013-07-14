@@ -1,10 +1,11 @@
 step = 0;
-data_set = 'D:\\data\\rgbdt\\dataset_20130628T150841\\';
+data_set = 'D:\\data\\rgbdt\\dataset_20130627T164440\\';
 
 classes = read_class_int(sprintf('%sclasses.txt', data_set));
+
 my_data = [];
 
-while 1
+while 0
     file_name_color = sprintf('%sfeatures\\color%05d.xml', data_set, step);
     file_name_depth = sprintf('%sfeatures\\depth%05d.xml', data_set, step);
     file_name_thermal = sprintf('%sfeatures\\thermal%05d.xml', data_set, step);

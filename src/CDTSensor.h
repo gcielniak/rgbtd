@@ -189,8 +189,6 @@ namespace LinLib
 
 			if (use_color)
 			{
-//				string file_name = path + "color" + s.str() + ".png";
-//				color_frame = cvLoadImageM(file_name.c_str());
 				color_frame = cv::imread(path + "color" + s.str() + ".png"); // this function is buggy on win32, release
 				if (!color_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
@@ -199,14 +197,13 @@ namespace LinLib
 			{
 //				string file_name = path + "depth" + s.str() + ".png";
 //				depth_frame = cvLoadImageM(file_name.c_str());
+//				this alternative implementation is leaky!
 				depth_frame = cv::imread(path + "depth" + s.str() + ".png"); // this function is buggy on win32, release
 				if (!depth_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_thermal)
 			{
-//				string file_name = path + "thermal" + s.str() + ".png";
-//				thermal_frame = cvLoadImageM(file_name.c_str());
 				thermal_frame = cv::imread(path + "thermal" + s.str() + ".png"); // this function is buggy on win32, release
 				if (!thermal_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
@@ -236,6 +233,21 @@ namespace LinLib
 				recording_step_skip++;
 			}
 			recording_step++;
+		}
+
+		void SaveFeatureMatrix(const cv::Mat& feature_matrix)
+		{
+			if (!boost::filesystem::exists(boost::filesystem::path(path)))
+				boost::filesystem::create_directories(boost::filesystem::path(path));
+
+			cv::FileStorage file_storage;
+
+			if (feature_matrix.data)
+			{
+				file_storage.open(path + "features.xml", cv::FileStorage::WRITE);
+				file_storage << "features" << feature_matrix;
+				file_storage.release();
+			}
 		}
 
 		void SaveFeatures(const cv::Mat& color_feature, const cv::Mat& depth_feature, const cv::Mat& thermal_feature)

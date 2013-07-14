@@ -36,6 +36,7 @@ void print_help()
 	cerr << " -co : color off" << endl;
 	cerr << " -do : depth off" << endl;
 	cerr << " -to : thermal off" << endl;
+	cerr << " -vo : verbose off" << endl;
 	//additional line
 }
 
@@ -51,6 +52,7 @@ int main(int argc, char **argv)
 	int pyramid_depth = 0;
 	int thermal_device = -1;
 	int start_frame = 0, end_frame = -1;
+	bool verbose = true;
 
 	LinLib::CDTFile image_writer, feature_writer;
 
@@ -75,6 +77,7 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i],"-co")==0) { use_color = false; }
 		else if (strcmp(argv[i],"-do")==0) { use_depth = false; }
 		else if (strcmp(argv[i],"-to")==0) { use_thermal = false; }
+		else if (strcmp(argv[i],"-vo")==0) { verbose = false; }
 		else if (strcmp(argv[i],"-h")==0)	{ print_help();	}
 		else if ((strcmp(argv[i],"-sk")==0) && (i < (argc-2))) 
 		{
@@ -113,7 +116,9 @@ int main(int argc, char **argv)
 	try { input_device->Init(); }
 	catch (LinLib::Exception*) { cerr << "Could not initialise the input device." << endl; exit(1); }
 
-	cv::Mat color_feature, depth_feature, thermal_feature;
+	cv::Mat color_feature, depth_feature, thermal_feature, feature_matrix;
+
+	int step = 0;
 
 	while (cvWaitKey(1) != 27)
 	{
@@ -125,10 +130,39 @@ int main(int argc, char **argv)
 
 		if (save_features)
 		{
-			color_feature = feature.Get(input_device->ColorFrame(), pyramid_depth).clone();
-			depth_feature = feature.Get(input_device->DepthFrame(), pyramid_depth, 0).clone();
-			thermal_feature = feature.Get(input_device->ThermalFrame(), pyramid_depth).clone();
-			feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
+			cv::Mat feature_vector;
+
+			if (input_device->ColorFrame().data)
+			{
+				color_feature = feature.Get(input_device->ColorFrame(), pyramid_depth).clone();
+				if (feature_vector.data)
+					cv::vconcat(feature_vector, color_feature, feature_vector);
+				else
+					feature_vector = color_feature.clone();
+			}
+			if (input_device->DepthFrame().data)
+			{
+				depth_feature = feature.Get(input_device->DepthFrame(), pyramid_depth, 0).clone();
+				if (feature_vector.data)
+					cv::vconcat(feature_vector, depth_feature, feature_vector);
+				else
+					feature_vector = depth_feature.clone();
+			}
+			if (input_device->ThermalFrame().data)
+			{
+				thermal_feature = feature.Get(input_device->ThermalFrame(), pyramid_depth).clone();
+				if (feature_vector.data)
+					cv::vconcat(feature_vector, thermal_feature, feature_vector);
+				else
+					feature_vector = thermal_feature.clone();
+			}
+
+			if (feature_matrix.data && feature_vector.data)
+				cv::hconcat(feature_matrix, feature_vector, feature_matrix);
+			else if (feature_vector.data)
+				feature_matrix = feature_vector.clone();
+
+//			feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
 		}
 
 		if (show_images)
@@ -150,6 +184,17 @@ int main(int argc, char **argv)
 			if (input_device->ThermalFrame().data)
 				cv::imshow("thermal feature image", feature.GetFeatureImage(input_device->ThermalFrame()));
 		}
+
+		if (verbose)
+			cerr << "Step " << step++ << " completed." << endl;
+	}
+
+	//save all feature data into a matrix
+	if (feature_matrix.data)
+	{
+		cerr << "Saving feature matrix... ";
+		feature_writer.SaveFeatureMatrix(feature_matrix);
+		cerr << " done." << endl;
 	}
 
 	delete input_device;
