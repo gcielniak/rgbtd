@@ -157,12 +157,12 @@ int main(int argc, char **argv)
 					feature_vector = thermal_feature.clone();
 			}
 
-			if (feature_matrix.data && feature_vector.data)
-				cv::hconcat(feature_matrix, feature_vector, feature_matrix);
-			else if (feature_vector.data)
-				feature_matrix = feature_vector.clone();
+			//if (feature_matrix.data && feature_vector.data)
+			//	cv::hconcat(feature_matrix, feature_vector, feature_matrix);
+			//else if (feature_vector.data)
+			//	feature_matrix = feature_vector.clone();
 
-//			feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
+			feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
 		}
 
 		if (show_images)
@@ -189,13 +189,13 @@ int main(int argc, char **argv)
 			cerr << "Step " << step++ << " completed." << endl;
 	}
 
-	//save all feature data into a matrix
-	if (feature_matrix.data)
-	{
-		cerr << "Saving feature matrix... ";
-		feature_writer.SaveFeatureMatrix(feature_matrix);
-		cerr << " done." << endl;
-	}
+	////save all feature data into a matrix
+	//if (feature_matrix.data)
+	//{
+	//	cerr << "Saving feature matrix... ";
+	//	feature_writer.SaveFeatureMatrix(feature_matrix);
+	//	cerr << " done." << endl;
+	//}
 
 	delete input_device;
 
