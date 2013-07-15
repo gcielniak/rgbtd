@@ -1,10 +1,10 @@
-load 'D:\data\rgbdt\dataset_20130627T164440\dataset_20130627';
+load '..\data\dataset_20130628';
 
 %filter
-dataset = dataset_20130627(1:10:end,1:258);
+dataset = dataset_20130628(1:10:end,1:258);
 
 %save
-fid = fopen('dataset_20130627.txt','w');
+fid = fopen('dataset_20130628.txt','w');
 
 for i=1:size(dataset,1)
     fprintf(fid,'%d ',dataset(i,1));    

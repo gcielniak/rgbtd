@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 		print_help();
 		exit(0);
 	}
-	
+
 	for (int i = 1; i < argc; i++)
 	{
 		if ((strcmp(argv[i],"-ip")==0) && (i < (argc-1))) { input_data_path = argv[++i]; }
@@ -157,12 +157,14 @@ int main(int argc, char **argv)
 					feature_vector = thermal_feature.clone();
 			}
 
-			//if (feature_matrix.data && feature_vector.data)
-			//	cv::hconcat(feature_matrix, feature_vector, feature_matrix);
-			//else if (feature_vector.data)
-			//	feature_matrix = feature_vector.clone();
+			//prepare a single feature matrix with concatenated features
+			if (feature_matrix.data && feature_vector.data)
+				cv::hconcat(feature_matrix, feature_vector, feature_matrix);
+			else if (feature_vector.data)
+				feature_matrix = feature_vector.clone();
 
-			feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
+			//write in old format (a single file per instance per feature)
+			//feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
 		}
 
 		if (show_images)
@@ -189,13 +191,13 @@ int main(int argc, char **argv)
 			cerr << "Step " << step++ << " completed." << endl;
 	}
 
-	////save all feature data into a matrix
-	//if (feature_matrix.data)
-	//{
-	//	cerr << "Saving feature matrix... ";
-	//	feature_writer.SaveFeatureMatrix(feature_matrix);
-	//	cerr << " done." << endl;
-	//}
+	//save all feature data into a matrix
+	if (feature_matrix.data)
+	{
+		cerr << "Saving feature matrix... ";
+		feature_writer.SaveFeatureMatrix(feature_matrix);
+		cerr << " done." << endl;
+	}
 
 	delete input_device;
 
