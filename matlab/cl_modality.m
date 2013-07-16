@@ -60,4 +60,4 @@ save results_modality acc;
 %%
 load results_modality;
 
-bar(0:8,reshape(acc(:,1),7,9)'); legend('c','d','t','cd','ct','dt','cdt'); xlabel('resolution (pyramid level)'); ylabel('accuracy');title('single pyramid');set(gca,'XTickLabel',{'all','640x480','320x240','160x120','80x60','40x30','20x15','10x7','5x3'});
+bar(0:8,reshape(acc(:,1),7,9)'); legend('c','d','t','cd','ct','dt','cdt'); xlabel('resolution (pyramid level)'); ylabel('accuracy');title('modality');set(gca,'XTickLabel',{'all','640x480','320x240','160x120','80x60','40x30','20x15','10x7','5x3'});

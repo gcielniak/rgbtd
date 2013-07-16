@@ -1,10 +1,10 @@
 %feature analysis
+tic
+dataset_20130627 = load_dataset('D:\\data\\rgbdt\\dataset_20130627T164440\\');
+dataset_20130628 = load_dataset('D:\\data\\rgbdt\\dataset_20130628T150841\\');
 
-load '..\data\dataset_20130627';
-load '..\data\dataset_20130628';
-
-training_examples = 1:10:size(dataset_20130627,1);
-testing_examples = 1:10:size(dataset_20130628,1);
+training_examples = 1:size(dataset_20130627,1);
+testing_examples = 1:size(dataset_20130628,1);
 
 labels_1 = dataset_20130627(training_examples,1);
 labels_2 = dataset_20130628(testing_examples,1);
@@ -81,3 +81,4 @@ plot(max_values);
 %[mv, mi] = max(max_values);
 %ft_sets{mi}
 %ft_weak
+toc
