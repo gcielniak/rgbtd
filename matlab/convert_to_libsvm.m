@@ -1,10 +1,7 @@
-load '..\data\dataset_20130628';
-
-%filter
-dataset = dataset_20130628(1:10:end,1:258);
-
+path = 'D:\\data\\rgbdt\\dataset_20130628\\';
+dataset = load_dataset(path);
 %save
-fid = fopen('dataset_20130628.txt','w');
+fid = fopen(strcat(path,'dataset_libsvm.txt'),'w');
 
 for i=1:size(dataset,1)
     fprintf(fid,'%d ',dataset(i,1));    
