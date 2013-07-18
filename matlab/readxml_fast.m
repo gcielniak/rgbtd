@@ -4,6 +4,10 @@ function out = readxml_fast(filename)
 
 fid = fopen(filename);
 
+if fid == -1
+    error(sprintf('Could not open the specified file %s',filename));
+end
+
 %ignore first three rows
 fgetl(fid); fgetl(fid); fgetl(fid);
 
@@ -16,7 +20,7 @@ fscanf(fid, '%6s', 1); cols = fscanf(fid, '%d'); fgetl(fid);
 fgetl(fid);fgetl(fid);
 
 %read and reshape matrix values
-out= reshape(fscanf(fid, '%f '),cols,rows);
+out= reshape(fscanf(fid, '%f '),rows,cols);
 
 fclose(fid);
 

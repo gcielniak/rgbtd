@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "LBPFeature.h"
 #include "CDTSensor.h"
+#include "Classifier.h"
 
 using namespace std;
 //using namespace boost::posix_time;
@@ -27,7 +28,7 @@ void print_help()
 	cerr << " -op : output data path [deafult: .\\data\\dataset_xxx]" << endl;
 	cerr << " -si : save images" << endl;
 	cerr << " -sf : save features" << endl;
-	cerr << " -pd : pyramid depth [deafult: 0]" << endl;
+	cerr << " -pd : pyramid depth [deafult: -1, max]" << endl;
 	cerr << " -sk : skip x out of xx frame when writing [deafult: 1 1]" << endl;
 	cerr << " -vi : visualise images" << endl;
 	cerr << " -vf : visualise features" << endl;
@@ -42,8 +43,9 @@ void print_help()
 
 int main(int argc, char **argv)
 {
-	LinLib::GTReader gt_reader;
-	gt_reader.ReadFile("D:\\data\\rgbdt\\dataset_20130727_fov\\classes.txt");
+	LinLib::Classifier classifier;
+
+	classifier.TrainTest();
 
 	return 0;
 
@@ -54,7 +56,7 @@ int main(int argc, char **argv)
 	bool show_images = false;
 	bool show_feature_images = false;
 	bool use_color = true, use_depth = true, use_thermal = true;
-	int pyramid_depth = 0;
+	int pyramid_depth = -1;
 	int thermal_device = -1;
 	int start_frame = 0, end_frame = -1;
 	bool verbose = true;
@@ -113,7 +115,7 @@ int main(int argc, char **argv)
 	input_device->UseThermal(use_thermal);
 
 	image_writer.Path(output_data_path + "\\images\\");
-	feature_writer.Path(output_data_path + "\\features\\");
+	feature_writer.Path(output_data_path);
 
 	LinLib::LBPFeature feature;
 	feature.BorderHandling(LinLib::BORDER_PADD);
@@ -141,7 +143,7 @@ int main(int argc, char **argv)
 			{
 				color_feature = feature.Get(input_device->ColorFrame(), pyramid_depth).clone();
 				if (feature_vector.data)
-					cv::vconcat(feature_vector, color_feature, feature_vector);
+					cv::hconcat(feature_vector, color_feature, feature_vector);
 				else
 					feature_vector = color_feature.clone();
 			}
@@ -149,7 +151,7 @@ int main(int argc, char **argv)
 			{
 				depth_feature = feature.Get(input_device->DepthFrame(), pyramid_depth, 0).clone();
 				if (feature_vector.data)
-					cv::vconcat(feature_vector, depth_feature, feature_vector);
+					cv::hconcat(feature_vector, depth_feature, feature_vector);
 				else
 					feature_vector = depth_feature.clone();
 			}
@@ -157,14 +159,14 @@ int main(int argc, char **argv)
 			{
 				thermal_feature = feature.Get(input_device->ThermalFrame(), pyramid_depth).clone();
 				if (feature_vector.data)
-					cv::vconcat(feature_vector, thermal_feature, feature_vector);
+					cv::hconcat(feature_vector, thermal_feature, feature_vector);
 				else
 					feature_vector = thermal_feature.clone();
 			}
 
 			//prepare a single feature matrix with concatenated features
 			if (feature_matrix.data && feature_vector.data)
-				cv::hconcat(feature_matrix, feature_vector, feature_matrix);
+				cv::vconcat(feature_matrix, feature_vector, feature_matrix);
 			else if (feature_vector.data)
 				feature_matrix = feature_vector.clone();
 
@@ -199,8 +201,13 @@ int main(int argc, char **argv)
 	//save all feature data into a matrix
 	if (feature_matrix.data)
 	{
-		cerr << "Saving feature matrix... ";
-		feature_writer.SaveFeatureMatrix(feature_matrix);
+		LinLib::GTReader gt_reader;
+		cv::Mat gt_matrix = gt_reader.ReadFile(input_data_path + "\\classes.txt");
+
+		cv::hconcat(gt_matrix, feature_matrix, gt_matrix);
+
+		cerr << "Saving data matrix... ";
+		feature_writer.SaveMatrix(gt_matrix, "dataset");
 		cerr << " done." << endl;
 	}
 

@@ -80,7 +80,7 @@ namespace LinLib
 			cv::Mat image = _image;
 			cv::Mat image_t;
 
-			feature = cv::Mat::zeros(257, 1, CV_32F);
+			feature = cv::Mat::zeros(1, 257, CV_32F);
 
 			switch(image.type())
 			{
@@ -279,10 +279,22 @@ namespace LinLib
 			return border_type;
 		}
 
-		/// Get the feature with a specified pyramid depth (def: 0) and NaN value (def -1 = no NaN)
-		cv::Mat& Get(const cv::Mat &_image, int depth=0, int nan_value=-1)
+		/// Get the feature with a specified pyramid depth (def: -1, max by auto calculation) and NaN value (def -1 = no NaN)
+		cv::Mat& Get(const cv::Mat &_image, int depth=-1, int nan_value=-1)
 		{
 			feature = Calculate(_image, nan_value);
+
+			//auto depth calculation, min size is 3 pixels
+			if (depth == -1)
+			{
+				int min_size = min(_image.rows, _image.cols);
+
+				while (min_size >= 3)
+				{
+					min_size /= 2;
+					depth++;
+				}
+			}
 
 			if (depth)
 			{
@@ -293,7 +305,7 @@ namespace LinLib
 				{
 					cv::pyrDown(image, image);
 					cv::Mat feature_part = Calculate(image, nan_value);
-					cv::vconcat(feature_pyr, feature_part, feature_pyr);
+					cv::hconcat(feature_pyr, feature_part, feature_pyr);
 				}
 
 				return feature_pyr;

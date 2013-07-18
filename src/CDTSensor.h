@@ -8,10 +8,20 @@ namespace LinLib
 {
 	using namespace std;
 
+
+	struct GTEntry
+	{
+		int id;
+		int start_frame;
+		int end_frame;
+	};
+
 	class GTReader
 	{
+		cv::Mat gt_data;
+
 	public:
-		void ReadFile(string file_name)
+		const cv::Mat& ReadFile(string file_name)
 		{
 			std::ifstream stream;
 			
@@ -21,18 +31,33 @@ namespace LinLib
 			catch (ifstream::failure) { throw new Exception("GTReader::ReadFile, Could not open the specifided file."); }
 
 			string s;
-			int id, frame_start, frame_end;
+			GTEntry entry;
+			vector<GTEntry> entry_list;
 
+			//read from file
 			while (!stream.eof())
 			{
-				stream >> id;
-				stream >> frame_start >> frame_end;
-				getline(stream, s);
-				cerr << id << ", " << frame_start << ", " << frame_end << endl;
-				cerr << s << endl;
+				try { getline(stream, s); }
+				catch (ios::failure) { break; }
+				stringstream sstream(s);
+				sstream.exceptions(ios::failbit);
+				sstream >> entry.id >> entry.start_frame;
+				try { sstream >> entry.end_frame; }
+				catch (ios::failure) { entry.end_frame = -entry.start_frame; }
+				entry.end_frame = -entry.end_frame;
+				entry_list.push_back(entry);
 			}
 
 			stream.close();
+
+			//pack it into a matrix
+			gt_data = cv::Mat(entry_list.back().end_frame+1, 1, CV_32F, cv::Scalar(0));
+
+			for (unsigned int i = 0; i < entry_list.size(); i++)
+				for (int j = entry_list[i].start_frame; j <= entry_list[i].end_frame; j++)
+					gt_data.at<float>(j) = (float)entry_list[i].id;
+
+			return gt_data;
 		}
 	};
 
@@ -265,17 +290,17 @@ namespace LinLib
 			recording_step++;
 		}
 
-		void SaveFeatureMatrix(const cv::Mat& feature_matrix)
+		void SaveMatrix(const cv::Mat& matrix, string matrix_name)
 		{
 			if (!boost::filesystem::exists(boost::filesystem::path(path)))
 				boost::filesystem::create_directories(boost::filesystem::path(path));
 
 			cv::FileStorage file_storage;
 
-			if (feature_matrix.data)
+			if (matrix.data)
 			{
-				file_storage.open(path + "features.xml", cv::FileStorage::WRITE);
-				file_storage << "features" << feature_matrix;
+				file_storage.open(path + matrix_name + ".xml", cv::FileStorage::WRITE);
+				file_storage << matrix_name << matrix;
 				file_storage.release();
 			}
 		}

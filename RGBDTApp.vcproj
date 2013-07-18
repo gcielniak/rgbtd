@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib"
+				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib opencv_ml245d.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Users\Greg\Documents\GitHub\videoInput\videoInputSrcAndDemos\VC2008-videoInputcompileAsLib\Debug&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
@@ -511,6 +511,10 @@
 			</File>
 			<File
 				RelativePath=".\src\CDTSensor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Classifier.h"
 				>
 			</File>
 			<File
