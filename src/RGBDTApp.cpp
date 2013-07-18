@@ -42,6 +42,11 @@ void print_help()
 
 int main(int argc, char **argv)
 {
+	LinLib::GTReader gt_reader;
+	gt_reader.ReadFile("D:\\data\\rgbdt\\dataset_20130727_fov\\classes.txt");
+
+	return 0;
+
 	string input_data_path = "";
 	string output_data_path = ".\\data\\dataset_" + currentDateTime() + "\\";
 	bool save_images = false;

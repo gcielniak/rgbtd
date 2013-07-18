@@ -6,6 +6,36 @@
 
 namespace LinLib
 {
+	using namespace std;
+
+	class GTReader
+	{
+	public:
+		void ReadFile(string file_name)
+		{
+			std::ifstream stream;
+			
+			stream.exceptions (ifstream::failbit | ifstream::badbit);
+
+			try { stream.open(file_name.c_str()); }
+			catch (ifstream::failure) { throw new Exception("GTReader::ReadFile, Could not open the specifided file."); }
+
+			string s;
+			int id, frame_start, frame_end;
+
+			while (!stream.eof())
+			{
+				stream >> id;
+				stream >> frame_start >> frame_end;
+				getline(stream, s);
+				cerr << id << ", " << frame_start << ", " << frame_end << endl;
+				cerr << s << endl;
+			}
+
+			stream.close();
+		}
+	};
+
 	/// Color-depth-thermal sensor interface.
 	class CDTSensor
 	{
