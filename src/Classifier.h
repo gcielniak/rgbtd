@@ -7,41 +7,29 @@ namespace LinLib
 	public:
 		void TrainTest()
 		{
+			cv::Mat dataset_1, dataset_2;
+
 			cv::FileStorage file_storage;
 
 			file_storage.open("D:\\data\\rgbdt\\dataset_20130627\\dataset.xml", cv::FileStorage::READ);
-
-			cv::Mat dataset;
-
-			file_storage["dataset"] >> dataset;
-
+			file_storage["dataset"] >> dataset_1;
 			file_storage.release();
 
-			cv::Mat training_set(dataset, cv::Range::all(), cv::Range(1,dataset.cols));
-			training_set.convertTo(training_set, CV_32FC1);
-//			cv::Mat training_labels(dataset, cv::Range::all(), cv::Range(0,1));
-			cv::Mat training_labels_int;
-			dataset(cv::Range::all(), cv::Range(0,1)).convertTo(training_labels_int, CV_32SC1);
+			file_storage.open("D:\\data\\rgbdt\\dataset_20130628\\dataset.xml", cv::FileStorage::READ);
+			file_storage["dataset"] >> dataset_2;
+			file_storage.release();
 
-			//implement normalization
+			cv::Mat train_set(dataset_1, cv::Range::all(), cv::Range(1,dataset_1.cols));
+			train_set.convertTo(train_set, CV_32FC1);
+			cv::Mat train_labels(dataset_1, cv::Range::all(), cv::Range(0,1));
+			cv::Mat train_labels_int;
+			train_labels.convertTo(train_labels_int, CV_32SC1);
 
-			cv::Mat reduce_min, reduce_max, reduce_range;
-
-			cv::reduce(training_set, reduce_min, 0, CV_REDUCE_MIN);
-			cv::reduce(training_set, reduce_max, 0, CV_REDUCE_MAX);
-			reduce_range = reduce_max - reduce_min;
-
-//			cerr << training_set << endl;
-
-			for (int i = 0; i < training_set.rows; i++)
-			{
-				training_set(cv::Range(i,i+1),cv::Range::all()) -= reduce_min;
-				training_set(cv::Range(i,i+1),cv::Range::all()) /= reduce_range;
-			}
-			training_set *= 2;
-			training_set -= 1;
-
-//			cerr << training_set << endl;
+			cv::Mat test_set(dataset_2, cv::Range::all(), cv::Range(1,dataset_2.cols));
+			test_set.convertTo(test_set, CV_32FC1);
+			cv::Mat test_labels(dataset_2, cv::Range::all(), cv::Range(0,1));
+			cv::Mat test_labels_int;
+			test_labels.convertTo(test_labels_int, CV_32SC1);
 
 			// Train the SVM
 			CvSVM SVM;
@@ -52,15 +40,22 @@ namespace LinLib
 			params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 0.001);
 
 			cerr << "Training... ";
-			SVM.train(training_set, training_labels_int, cv::Mat(), cv::Mat(), params);
+			SVM.train(train_set, train_labels_int, cv::Mat(), cv::Mat(), params);
 			cerr << "done." << endl;
 
-			cerr << "Testing... ";
-			cv::Mat result;
-			SVM.predict(training_set, result);
+			cerr << "Testing on train... ";
+			cv::Mat train_result;
+			SVM.predict(train_set, train_result);
 			cerr << "done." << endl;
-			cerr << cv::countNonZero(result-dataset(cv::Range::all(), cv::Range(0,1))) << " out of " << dataset.rows << endl;
-			cerr << (double)cv::countNonZero(result-dataset(cv::Range::all(), cv::Range(0,1)))/dataset.rows << " % error." << endl;
+			cerr << cv::countNonZero(train_result-train_labels) << " out of " << train_set.rows << endl;
+			cerr << (double)cv::countNonZero(train_result-train_labels)*100.0/train_set.rows << " % error." << endl;
+
+			cerr << "Testing on test... ";
+			cv::Mat test_result;
+			SVM.predict(test_set, test_result);
+			cerr << "done." << endl;
+			cerr << cv::countNonZero(test_result-test_labels) << " out of " << test_set.rows << endl;
+			cerr << (double)cv::countNonZero(test_result-test_labels)*100.0/test_set.rows << " % error." << endl;
 		}
 	};
 }

@@ -244,7 +244,8 @@ namespace LinLib
 
 			if (use_color)
 			{
-				color_frame = cv::imread(path + "color" + s.str() + ".png"); // this function is buggy on win32, release
+				string name = path + "color" + s.str() + ".png";
+				color_frame = cv::imread(name); // this function is buggy on win32, release
 				if (!color_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}

@@ -43,11 +43,14 @@ void print_help()
 
 int main(int argc, char **argv)
 {
+	if (1)
+	{
 	LinLib::Classifier classifier;
 
 	classifier.TrainTest();
 
 	return 0;
+	}
 
 	string input_data_path = "";
 	string output_data_path = ".\\data\\dataset_" + currentDateTime() + "\\";
@@ -177,11 +180,11 @@ int main(int argc, char **argv)
 		if (show_images)
 		{
 			if (input_device->ColorFrame().data)
-				cv::imshow("color", input_device->ColorFrame());
+				cv::imshow("color", input_device->ColorFrame().clone());
 			if (input_device->DepthFrame().data)
 				cv::imshow("depth", input_device->DepthFrame()*65535/10000);
 			if (input_device->ThermalFrame().data)
-				cv::imshow("thermal", input_device->ThermalFrame());
+				cv::imshow("thermal", input_device->ThermalFrame().clone());
 		}
 
 		if (show_feature_images)

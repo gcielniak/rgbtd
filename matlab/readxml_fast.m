@@ -20,7 +20,7 @@ fscanf(fid, '%6s', 1); cols = fscanf(fid, '%d'); fgetl(fid);
 fgetl(fid);fgetl(fid);
 
 %read and reshape matrix values
-out= reshape(fscanf(fid, '%f '),rows,cols);
+out= reshape(fscanf(fid, '%f '),cols,rows)';
 
 fclose(fid);
 

@@ -24,6 +24,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets=".\EnvPaths.vsprops"
 			UseOfATL="2"
 			CharacterSet="1"
 			>
@@ -45,11 +46,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENCV_DIR)\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -65,9 +66,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib opencv_ml245d.lib"
+				AdditionalDependencies="OpenNI2.lib opencv_core$(OPENCV_VER)d.lib opencv_highgui$(OPENCV_VER)d.lib opencv_imgproc$(OPENCV_VER)d.lib opencv_ml$(OPENCV_VER)d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Users\Greg\Documents\GitHub\videoInput\videoInputSrcAndDemos\VC2008-videoInputcompileAsLib\Debug&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;$(OPENCV_DIR)\x86\vc9\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -98,11 +99,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
-			UseOfATL="2"
-			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -118,19 +115,9 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="3"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -143,14 +130,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Users\Greg\Documents\GitHub\videoInput\videoInputSrcAndDemos\VC2008-videoInputcompileAsLib\Debug&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -179,6 +158,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets=".\EnvPaths.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -201,9 +181,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
+				AdditionalIncludeDirectories="&quot;$(OPENCV_DIR)\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="1"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -220,9 +200,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245.lib opencv_highgui245d.lib opencv_imgproc245.lib opencv_ml245.lib"
+				AdditionalDependencies="OpenNI2.lib opencv_core$(OPENCV_VER).lib opencv_highgui$(OPENCV_VER).lib opencv_imgproc$(OPENCV_VER).lib opencv_ml$(OPENCV_VER).lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;$(OPENCV_DIR)\x86\vc9\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -254,90 +234,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="1"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245.lib opencv_highgui245.lib opencv_imgproc245.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
-				IgnoreDefaultLibraryNames="atlthunk; libcmt;"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debugx64|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="2"
-			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -356,15 +253,6 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -377,92 +265,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Users\Greg\Documents\GitHub\videoInput\videoInputSrcAndDemos\VC2008-videoInputcompileAsLib\Debug&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debugx64|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="2"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\opencv\build\include&quot;;&quot;$(OPENNI2_INCLUDE)&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="OpenNI2.lib opencv_core245d.lib opencv_highgui245d.lib opencv_imgproc245d.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OPENNI2_LIB)&quot;;&quot;C:\Program Files\opencv\build\x86\vc9\lib&quot;;&quot;C:\Users\Greg\Documents\GitHub\videoInput\videoInputSrcAndDemos\VC2008-videoInputcompileAsLib\Debug&quot;;&quot;C:\Program Files (x86)\boost\boost_1_51\lib&quot;"
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
