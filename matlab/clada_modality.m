@@ -6,8 +6,8 @@ dataset_20130628 = load_dataset('D:\\data\\rgbdt\\dataset_20130628\\');
 training_examples = 1:size(dataset_20130627,1);
 testing_examples = 1:size(dataset_20130628,1);
 
-labels_1 = dataset_20130627(training_examples,1);
-labels_2 = dataset_20130628(testing_examples,1);
+labels_1 = dataset_20130627(training_examples,1)+1;
+labels_2 = dataset_20130628(testing_examples,1)+1;
 
 %prepare feature combinations representing different modalities
 features = [];
@@ -33,6 +33,7 @@ for i=1:8
 end
 
 acc = [];
+ada = [];
 
 for i = 1:size(features,2)
     
@@ -41,25 +42,19 @@ for i = 1:size(features,2)
     dataset_1 = dataset_20130627(training_examples,features{i}+1);
     dataset_2 = dataset_20130628(testing_examples,features{i}+1);
 
-    [dataset_1, minv, maxv] = scale_svm(dataset_1);
-    dataset_2 = scale_svm(dataset_2, minv, maxv);
-    dataset_1(isnan(dataset_1))=0;
-    dataset_2(isnan(dataset_2))=0;
+    fprintf('Training...\n')
+    ada{i} = fitensemble(dataset_1,nominal(labels_1),'AdaBoostM2',100,...
+        ClassificationTree.template('MinLeaf',size(dataset_1,1)/50));
     
-    fprintf('Training... ');
-    model = svmtrain(labels_1,dataset_1,'-q');
-    fprintf('done\n');
-
-    fprintf('Testing... ');
-    [p_label, accuracy, dv] = svmpredict(labels_2,dataset_2, model,'-q');
-    fprintf('done\n');
-
-    acc(i,:) = accuracy;
+    fprintf('Testing...\n')
+    output = predict(ada{i},dataset_2);
+    
+    acc(i,:) = 1 - length(find(labels_2-double(output)))/length(labels_2);
 end
 
-save results_modality acc;
+save('results_modality_ada','acc','ada','-v7.3');
 
 %%
-load results_modality;
+load results_modality_ada;
 
 bar(0:8,reshape(acc(:,1),7,9)'); legend('c','d','t','cd','ct','dt','cdt'); xlabel('resolution (pyramid level)'); ylabel('accuracy');title('modality');set(gca,'XTickLabel',{'all','640x480','320x240','160x120','80x60','40x30','20x15','10x7','5x3'});

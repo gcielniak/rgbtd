@@ -20,7 +20,7 @@ namespace LinLib
 		BorderType border_type;
 
 		/// calculate lbp for uchar, used by the border filling procedure
-		inline int CalcIndex(uchar p, uchar pa, uchar pb, uchar pc, uchar pd, uchar pe, uchar pf, uchar pg, uchar ph, int nan_value)
+		inline static int CalcIndex(uchar p, uchar pa, uchar pb, uchar pc, uchar pd, uchar pe, uchar pf, uchar pg, uchar ph, int nan_value)
 		{
 			uchar a = 1, b = 2, c = 4, d = 8, e = 16, f = 32, g = 64, h = 128;
 
@@ -98,6 +98,8 @@ namespace LinLib
 					_p2 = image.ptr<uchar>(i+1);
 					for(int j = 1; j < image.cols-1; j++)
 					{
+//						_pd[CalcIndex(_p[j], _p[j+1], _p2[j+1], _p2[j], _p2[j-1], _p[j-1], _p1[j-1], _p1[j], _p1[j+1], nan_value)]++;
+
 						uchar a = 1, b = 2, c = 4, d = 8, e = 16, f = 32, g = 64, h = 128;
 						p = _p[j];
 						int index = 0;
@@ -310,6 +312,43 @@ namespace LinLib
 
 				return feature_pyr;
 			}
+
+			return feature;
+		}
+
+		void SplitAndCalculate(int depth_max, int& current_depth)
+		{
+			if (current_depth < depth_max)
+			{
+
+				current_depth++;
+				SplitAndCalculate(depth_max, current_depth);
+			}
+		}
+
+		cv::Mat& GetSpatial(const cv::Mat &_image, int max_depth=0, int nan_value=-1)
+		{
+			int divisions = max_depth<<1;
+
+			int r_div = _image.rows/divisions;
+			int c_div = _image.cols/divisions;
+
+			for (int i = 0; i < divisions; i++)
+			for (int j = 0; j < divisions; j++)
+			{
+			}
+
+			vector<int> my_queue;
+			int current_id = 0;
+
+			for (int i = 0; i <= max_depth; i++)
+			{
+				for (int j = 0; j < (1<<(2*i)); j++)
+					my_queue.push_back(current_id++);
+			}
+
+			for (unsigned int i = 0; i < my_queue.size(); i++)
+				cerr << my_queue[i] << " ";
 
 			return feature;
 		}

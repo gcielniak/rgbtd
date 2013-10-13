@@ -10,6 +10,9 @@ Release/
 html/
 latex/
 data/
+matlab/images/
+matlab/images_2/
+matlab/*.mat
 *.dll
 *.lib
 *.ncb

@@ -1,32 +1,42 @@
 %adaboost
 
 %example svm training file
-load '..\data\dataset_20130627';
-load '..\data\dataset_20130628';
+%load '..\data\dataset_20130627';
+%load '..\data\dataset_20130628';
+
+dataset_20130627 = load_dataset('D:\\data\\rgbdt\\dataset_20130627\\');
+dataset_20130628 = load_dataset('D:\\data\\rgbdt\\dataset_20130628\\');
 
 acc = [];
 unique = [];
 
+features = (1:257)+1;
+
+labels_1 = dataset_20130627(:,1)+1;
+dataset_1 = dataset_20130627(:,features);
+labels_2 = dataset_20130628(:,1)+1;
+dataset_2 = dataset_20130628(:,features);
+
+train_res = [];
+test_res = [];
+telapsed = [];
+k = 1;
+
 for i = 1
-    fprintf('Feature set %d\n',i);
-
-    features = (2:258)+(i-1)*257;
+    fprintf('Training step %d...\n',i);
+    tstart = tic;
+    ada = fitensemble(dataset_1,nominal(labels_1),'AdaBoostM2',100,...
+        ClassificationTree.template('MinLeaf',size(dataset_1,1)/50));
+    telapsed(k) = toc(tstart);
     
-    labels_1 = dataset_20130627(:,1);
-    dataset_1 = dataset_20130627(:,features);
-    labels_2 = dataset_20130628(:,1);
-    dataset_2 = dataset_20130628(:,features);
-
-%    dataset_1 = scale_svm(dataset_1);
-%    dataset_1 = remove_nan(dataset_1);
-%    dataset_2 = scale_svm(dataset_2);
-%    dataset_2 = remove_nan(dataset_2);
-
-    unique(i,1) = size(dataset_1,2);
-    unique(i,2) = size(dataset_2,2);
+    fprintf('Testing...\n')
+    out_1 = predict(ada,dataset_1);
+    out_2 = predict(ada,dataset_2);
     
-    ada = fitensemble(dataset_1,nominal(labels_1),'AdaBoostM2',100,'Tree');
-    out = predict(ada,dataset_2);
+    train_res(k) = length(find(labels_1-double(out_1)))/length(labels_1);
+    test_res(k) = length(find(labels_2-double(out_2)))/length(labels_2);
+    
+    fprintf('Training error: %.3f\n',train_res(k));
+    fprintf('Testing error: %.3f\n',test_res(k));
+    k = k + 1;
 end
-
-size(find(labels_2-double(out)),1)/size(labels_2,1)

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/date_time.hpp>
+#include <boost/timer.hpp>
 
 #include "OpenNICamera.h"
 #include "Camera.h"
@@ -43,14 +44,15 @@ void print_help()
 
 int main(int argc, char **argv)
 {
-	if (1)
+/*	if (1)
 	{
-	LinLib::Classifier classifier;
+		LinLib::LBPFeature feature;
 
-	classifier.TrainTest();
+		feature.GetSpatial(cv::Mat(),3);
 
-	return 0;
+		return 0;
 	}
+*/
 
 	string input_data_path = "";
 	string output_data_path = ".\\data\\dataset_" + currentDateTime() + "\\";
@@ -58,6 +60,7 @@ int main(int argc, char **argv)
 	bool save_features = false;
 	bool show_images = false;
 	bool show_feature_images = false;
+	bool save_feature_image = false;
 	bool use_color = true, use_depth = true, use_thermal = true;
 	int pyramid_depth = -1;
 	int thermal_device = -1;
@@ -82,6 +85,7 @@ int main(int argc, char **argv)
 		else if ((strcmp(argv[i],"-fe")==0) && (i < (argc-1))) { end_frame = atoi(argv[++i]); }
 		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
 		else if (strcmp(argv[i],"-sf")==0) { save_features = true; }
+		else if (strcmp(argv[i],"-sfi")==0) { save_feature_image = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
 		else if (strcmp(argv[i],"-vf")==0) { show_feature_images = true; }
 		else if (strcmp(argv[i],"-co")==0) { use_color = false; }
@@ -135,6 +139,18 @@ int main(int argc, char **argv)
 		try { input_device->GrabAllImages(); }
 		catch (LinLib::Exception*) { break; }
 
+		if (true)
+		{
+			boost::timer t;
+
+			for (int i = 0; i < 1000; i++)
+			{
+				feature.Get(input_device->ColorFrame(), 0);
+			}
+
+			cerr << "Completed in " << t.elapsed() << endl;
+		}
+
 		if (save_images)
 			image_writer.SaveImages(input_device->ColorFrame(), input_device->DepthFrame(), input_device->ThermalFrame());
 
@@ -187,14 +203,33 @@ int main(int argc, char **argv)
 				cv::imshow("thermal", input_device->ThermalFrame().clone());
 		}
 
-		if (show_feature_images)
+		if (show_feature_images || save_feature_image)
 		{
+			cv::Mat color_feature_image, depth_feature_image, thermal_feature_image;
+
 			if (input_device->ColorFrame().data)
-				cv::imshow("color feature image", feature.GetFeatureImage(input_device->ColorFrame()));
+			{
+				color_feature_image = feature.GetFeatureImage(input_device->ColorFrame()).clone();
+				if (show_feature_images)
+					cv::imshow("color feature image", color_feature_image);
+			}
+
 			if (input_device->DepthFrame().data)
-				cv::imshow("depth feature image", feature.GetFeatureImage(input_device->DepthFrame()));
+			{
+				depth_feature_image = feature.GetFeatureImage(input_device->DepthFrame()).clone();
+				if (show_feature_images)
+					cv::imshow("depth feature image", depth_feature_image);
+			}
+
 			if (input_device->ThermalFrame().data)
-				cv::imshow("thermal feature image", feature.GetFeatureImage(input_device->ThermalFrame()));
+			{
+				thermal_feature_image = feature.GetFeatureImage(input_device->ThermalFrame()).clone();
+				if (show_feature_images)
+					cv::imshow("thermal feature image", thermal_feature_image);
+			}
+
+			if (save_feature_image)
+				image_writer.SaveFeatureImages(color_feature_image, depth_feature_image, thermal_feature_image);
 		}
 
 		if (verbose)

@@ -244,23 +244,19 @@ namespace LinLib
 
 			if (use_color)
 			{
-				string name = path + "color" + s.str() + ".png";
-				color_frame = cv::imread(name); // this function is buggy on win32, release
+				color_frame = cv::imread(path + "color" + s.str() + ".png", CV_LOAD_IMAGE_GRAYSCALE); // this function is buggy on win32, release
 				if (!color_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_depth)
 			{
-//				string file_name = path + "depth" + s.str() + ".png";
-//				depth_frame = cvLoadImageM(file_name.c_str());
-//				this alternative implementation is leaky!
-				depth_frame = cv::imread(path + "depth" + s.str() + ".png"); // this function is buggy on win32, release
+				depth_frame = cv::imread(path + "depth" + s.str() + ".png", CV_LOAD_IMAGE_GRAYSCALE); // this function is buggy on win32, release
 				if (!depth_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
 			if (use_thermal)
 			{
-				thermal_frame = cv::imread(path + "thermal" + s.str() + ".png"); // this function is buggy on win32, release
+				thermal_frame = cv::imread(path + "thermal" + s.str() + ".png", CV_LOAD_IMAGE_GRAYSCALE); // this function is buggy on win32, release
 				if (!thermal_frame.data)
 					throw new Exception("CDTFile::GrabAllImages, could not read the specified image file.");
 			}
@@ -344,5 +340,27 @@ namespace LinLib
 			}
 			recording_step++;
 		}
+
+		void SaveFeatureImages(const cv::Mat& color_image, const cv::Mat& depth_image, const cv::Mat& thermal_image)
+		{
+			if (!boost::filesystem::exists(boost::filesystem::path(path)))
+				boost::filesystem::create_directories(boost::filesystem::path(path));
+
+			int skip_steps = (recording_step % skip_out_of_frames);
+			if (skip_steps >= skip_frames)
+			{
+				std::stringstream s;
+				s << std::setw(5) << std::setfill('0') << recording_step_skip;
+				if (color_image.data)
+					cv::imwrite(path + "cfeature" + s.str() + ".png", color_image);
+				if (depth_image.data)
+					cv::imwrite(path + "dfeature" + s.str() + ".png", depth_image);
+				if (thermal_image.data)
+					cv::imwrite(path + "tfeature" + s.str() + ".png", thermal_image);
+				recording_step_skip++;
+			}
+			recording_step++;
+		}
+
 	};
 }
