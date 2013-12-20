@@ -28,7 +28,8 @@ void print_help()
 	cerr << " -td : thermal device" << endl;
 	cerr << " -op : output data path [deafult: .\\data\\dataset_xxx]" << endl;
 	cerr << " -si : save images" << endl;
-	cerr << " -sf : save features" << endl;
+	cerr << " -sf : save features (raw format)" << endl;
+	cerr << "-sfx : save features (xml format)" << endl;
 	cerr << " -pd : pyramid depth [deafult: -1, max]" << endl;
 	cerr << " -sk : skip x out of xx frame when writing [deafult: 1 1]" << endl;
 	cerr << " -vi : visualise images" << endl;
@@ -39,25 +40,15 @@ void print_help()
 	cerr << " -do : depth off" << endl;
 	cerr << " -to : thermal off" << endl;
 	cerr << " -vo : verbose off" << endl;
-	//additional line
 }
 
 int main(int argc, char **argv)
 {
-/*	if (1)
-	{
-		LinLib::LBPFeature feature;
-
-		feature.GetSpatial(cv::Mat(),3);
-
-		return 0;
-	}
-*/
-
 	string input_data_path = "";
 	string output_data_path = ".\\data\\dataset_" + currentDateTime() + "\\";
 	bool save_images = false;
-	bool save_features = false;
+	bool save_features_raw = false;
+	bool save_features_xml = false;
 	bool show_images = false;
 	bool show_feature_images = false;
 	bool save_feature_image = false;
@@ -84,7 +75,8 @@ int main(int argc, char **argv)
 		else if ((strcmp(argv[i],"-fs")==0) && (i < (argc-1))) { start_frame = atoi(argv[++i]); }
 		else if ((strcmp(argv[i],"-fe")==0) && (i < (argc-1))) { end_frame = atoi(argv[++i]); }
 		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
-		else if (strcmp(argv[i],"-sf")==0) { save_features = true; }
+		else if (strcmp(argv[i],"-sf")==0) { save_features_raw = true; }
+		else if (strcmp(argv[i],"-sfx")==0) { save_features_xml = true; }
 		else if (strcmp(argv[i],"-sfi")==0) { save_feature_image = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
 		else if (strcmp(argv[i],"-vf")==0) { show_feature_images = true; }
@@ -136,25 +128,20 @@ int main(int argc, char **argv)
 
 	while (cvWaitKey(1) != 27)
 	{
-		try { input_device->GrabAllImages(); }
-		catch (LinLib::Exception*) { break; }
-
-		if (true)
+		try 
+		{ 
+			input_device->GrabAllImages(); 
+		}
+		catch (LinLib::Exception*) 
 		{
-			boost::timer t;
-
-			for (int i = 0; i < 1000; i++)
-			{
-				feature.Get(input_device->ColorFrame(), 0);
-			}
-
-			cerr << "Completed in " << t.elapsed() << endl;
+			if (!input_device->ColorFrame().data && !input_device->DepthFrame().data && !input_device->ThermalFrame().data)
+				break; 
 		}
 
 		if (save_images)
 			image_writer.SaveImages(input_device->ColorFrame(), input_device->DepthFrame(), input_device->ThermalFrame());
 
-		if (save_features)
+		if (save_features_raw || save_features_xml)
 		{
 			cv::Mat feature_vector;
 
@@ -188,9 +175,6 @@ int main(int argc, char **argv)
 				cv::vconcat(feature_matrix, feature_vector, feature_matrix);
 			else if (feature_vector.data)
 				feature_matrix = feature_vector.clone();
-
-			//write in old format (a single file per instance per feature)
-			//feature_writer.SaveFeatures(color_feature, depth_feature, thermal_feature);
 		}
 
 		if (show_images)
@@ -239,14 +223,40 @@ int main(int argc, char **argv)
 	//save all feature data into a matrix
 	if (feature_matrix.data)
 	{
+		//read ground truth data
 		LinLib::GTReader gt_reader;
-		cv::Mat gt_matrix = gt_reader.ReadFile(input_data_path + "\\classes.txt");
+		cv::Mat gt_matrix;
+
+		try { gt_matrix = gt_reader.ReadFile(input_data_path + "\\classes.txt"); }
+		//if failed, assign -1 (unknown class) to all entries
+		catch (LinLib::Exception*) { gt_matrix = cv::Mat(cv::Size(1,feature_matrix.rows),CV_32F,-1); }
 
 		cv::hconcat(gt_matrix, feature_matrix, gt_matrix);
 
-		cerr << "Saving data matrix... ";
-		feature_writer.SaveMatrix(gt_matrix, "dataset");
-		cerr << " done." << endl;
+		if (verbose)
+			cerr << "Writing data in xml format... ";
+		
+		feature_writer.SaveMatrix(gt_matrix, "features");
+
+		if (verbose)
+			cerr << " done." << endl;
+
+		if (verbose)
+			cerr << "Writing data in raw format... ";
+
+		ofstream file;
+		file.open(string(output_data_path + "\\features.txt").c_str());
+        for (int j = 0; j < gt_matrix.rows; j++)
+        {
+            file << (int)gt_matrix.at<float>(0,0) << " ";
+            for (int i = 1; i < gt_matrix.cols; i++)
+                file << gt_matrix.at<float>(0,i) << " ";
+            file << endl;
+        }
+		file.close();
+
+		if (verbose)
+			cerr << "done." << endl;
 	}
 
 	delete input_device;

@@ -6,10 +6,10 @@
 	>
 	<UserMacro
 		Name="OPENCV_DIR"
-		Value="c:\opencv\buildGPU"
+		Value="C:\Program Files\opencv\build"
 	/>
 	<UserMacro
 		Name="OPENCV_VER"
-		Value="246"
+		Value="245"
 	/>
 </VisualStudioPropertySheet>

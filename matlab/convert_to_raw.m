@@ -1,6 +1,6 @@
-dataset_name = 'dataset_20130628';
+dataset_name = 'oscar_split';
 
-dataset = load_dataset(strcat('D:\\data\\rgbdt\\',dataset_name,'\\'));
+dataset = load_dataset(strcat('D:\\data\\nexus4\\',dataset_name,'\\'));
 
 %save
 fid = fopen(strcat(dataset_name,'_raw.txt'),'w');
