@@ -18,6 +18,9 @@ matlab/*.mat
 *.ncb
 *.suo
 *.vcproj.*
+*.sdf
+*.vcxproj.filters
+*.vcxproj.user
 
 #codeblocks files
 */*/*.layout

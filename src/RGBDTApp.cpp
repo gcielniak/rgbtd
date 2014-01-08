@@ -1,6 +1,7 @@
 #include <iostream>
-#include <boost/date_time.hpp>
-#include <boost/timer.hpp>
+#include <string>
+#include <stdio.h>
+#include <time.h>
 
 #include "OpenNICamera.h"
 #include "Camera.h"
@@ -9,15 +10,16 @@
 #include "Classifier.h"
 
 using namespace std;
-//using namespace boost::posix_time;
 
-// Get current date/time, format is YYYYMMDDTHHmmss
-const std::string currentDateTime()
-{
-	ostringstream ss;
-	ss.imbue(std::locale(ss.getloc(), new boost::posix_time::time_facet("%Y%m%dT%H%M%S")));
-	ss << boost::posix_time::second_clock::local_time();
-	return ss.str();
+// Get current date/time, format is  YYYYMMDDTHHmmss
+const std::string currentDateTime() {
+	time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y%m%dT%H%M%S", &tstruct);
+
+    return buf;
 }
 
 void print_help()
@@ -136,6 +138,16 @@ int main(int argc, char **argv)
 		{
 			if (!input_device->ColorFrame().data && !input_device->DepthFrame().data && !input_device->ThermalFrame().data)
 				break; 
+		}
+
+		if (1)
+		{
+			int iterations = 1000;
+			DWORD start = ::GetTickCount();
+
+			for (int i = 0; i < iterations; i++)
+				color_feature = feature.Get(input_device->ColorFrame(), pyramid_depth);
+			cerr << "Feature calculated in " << double(::GetTickCount() - start)/iterations << " ms" << endl;
 		}
 
 		if (save_images)

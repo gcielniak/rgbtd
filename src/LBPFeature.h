@@ -98,9 +98,6 @@ namespace LinLib
 					_p2 = image.ptr<uchar>(i+1);
 					for(int j = 1; j < image.cols-1; j++)
 					{
-//						_pd[CalcIndex(_p[j], _p[j+1], _p2[j+1], _p2[j], _p2[j-1], _p[j-1], _p1[j-1], _p1[j], _p1[j+1], nan_value)]++;
-
-						uchar a = 1, b = 2, c = 4, d = 8, e = 16, f = 32, g = 64, h = 128;
 						p = _p[j];
 						int index = 0;
 
@@ -115,15 +112,14 @@ namespace LinLib
 
 						if (index != 256)
 						{
-							if ((p - _p[j+1]) < 0) a = 0;
-							if ((p - _p2[j+1]) < 0) b = 0;
-							if ((p - _p2[j]) < 0) c = 0;
-							if ((p - _p2[j-1]) < 0) d = 0;
-							if ((p - _p[j-1]) < 0) e = 0;
-							if ((p - _p1[j-1]) < 0) f = 0;
-							if ((p - _p1[j]) < 0) g = 0;
-							if ((p - _p1[j+1]) < 0) h = 0;
-							index = (a | b | c | d | e | f | g | h);
+							index |= ((p - _p[j+1]) >= 0);
+							index |= ((p - _p2[j+1]) >= 0) << 1;
+							index |= ((p - _p2[j]) >= 0) << 2;
+							index |= ((p - _p2[j-1]) >= 0) << 3;
+							index |= ((p - _p[j-1]) >= 0) << 4;
+							index |= ((p - _p1[j-1]) >= 0) << 5;
+							index |= ((p - _p1[j]) >= 0) << 6;
+							index |= ((p - _p1[j+1]) >= 0) << 7;
 						}
 
 						_pd[index]++;
@@ -139,9 +135,8 @@ namespace LinLib
 					_pp2 = image.ptr<ushort>(i+1);
 					for(int j = 1; j < image.cols-1; j++)
 					{
-						uchar a = 1, b = 2, c = 4, d = 8, e = 16, f = 32, g = 64, h = 128;
 						pp = _pp[j];
-						perform_calculation = true;
+						int index = 0;
 
 						//check for nan_values
 						if (nan_value != -1)
@@ -150,23 +145,23 @@ namespace LinLib
 								(_pp1[j-1] == nan_value) || (_pp1[j] == nan_value) || (_pp1[j+1] == nan_value) || 
 								(_pp2[j-1] == nan_value) || (_pp2[j] == nan_value) || (_pp2[j+1] == nan_value))
 							{
-								_pd[256]++;
-								perform_calculation = false;
+								index = 256;
 							}
 						}
 
-						if (perform_calculation)
+						if (index != 256)
 						{
-							if ((pp - _pp[j+1]) < 0) a = 0;
-							if ((pp - _pp2[j+1]) < 0) b = 0;
-							if ((pp - _pp2[j]) < 0) c = 0;
-							if ((pp - _pp2[j-1]) < 0) d = 0;
-							if ((pp - _pp[j-1]) < 0) e = 0;
-							if ((pp - _pp1[j-1]) < 0) f = 0;
-							if ((pp - _pp1[j]) < 0) g = 0;
-							if ((pp - _pp1[j+1]) < 0) h = 0;
-							_pd[a | b | c | d | e | f | g | h]++;
+							index |= ((pp - _pp[j+1]) >= 0);
+							index |= ((pp - _pp2[j+1]) >= 0) << 1;
+							index |= ((pp - _pp2[j]) >= 0) << 2;
+							index |= ((pp - _pp2[j-1]) >= 0) << 3;
+							index |= ((pp - _pp[j-1]) >= 0) << 4;
+							index |= ((pp - _pp1[j-1]) >= 0) << 5;
+							index |= ((pp - _pp1[j]) >= 0) << 6;
+							index |= ((pp - _pp1[j+1]) >= 0) << 7;
 						}
+
+						_pd[index]++;
 					}
 				}
 				break;

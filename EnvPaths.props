@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <OPENCV_DIR>H:\Greg\opencv\build</OPENCV_DIR>
+    <OPENCV_VER>247</OPENCV_VER>
+    <BOOST_DIR>H:\Greg\boost_1_55_0</BOOST_DIR>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="OPENCV_DIR">
+      <Value>$(OPENCV_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="OPENCV_VER">
+      <Value>$(OPENCV_VER)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_DIR">
+      <Value>$(BOOST_DIR)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
