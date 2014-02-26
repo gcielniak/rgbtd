@@ -6,6 +6,7 @@
 #include "OpenNICamera.h"
 #include "Camera.h"
 #include "LBPFeature.h"
+#include "LBPFeature2.h"
 #include "CDTSensor.h"
 #include "Classifier.h"
 
@@ -138,6 +139,18 @@ int main(int argc, char **argv)
 		{
 			if (!input_device->ColorFrame().data && !input_device->DepthFrame().data && !input_device->ThermalFrame().data)
 				break; 
+		}
+
+		//test speed
+
+		if (1)
+		{
+			int iterations = 1000;
+			DWORD start = ::GetTickCount();
+
+			for (int i = 0; i < iterations; i++)
+				LinLib::LBPFeature2::Calculate(input_device->ColorFrame(), color_feature);
+			cerr << "Feature calculated in " << double(::GetTickCount() - start)/iterations << " ms" << endl;
 		}
 
 		if (1)

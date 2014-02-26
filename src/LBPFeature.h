@@ -75,7 +75,7 @@ namespace LinLib
 			uchar p, *_p, *_p1, *_p2;
 			ushort pp, *_pp, *_pp1, *_pp2;
 			float *_pd;
-			bool perform_calculation;
+//			bool perform_calculation;
 
 			cv::Mat image = _image;
 			cv::Mat image_t;
