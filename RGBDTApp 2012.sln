@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RGBDTApp", "RGBDTApp.vcxproj", "{F96B10ED-53CF-4638-9673-6F105DE6C414}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PersonDetector", "PersonDetector.vcxproj", "{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -17,6 +19,12 @@ Global
 		{F96B10ED-53CF-4638-9673-6F105DE6C414}.Release|Win32.ActiveCfg = Release|Win32
 		{F96B10ED-53CF-4638-9673-6F105DE6C414}.Release|Win32.Build.0 = Release|Win32
 		{F96B10ED-53CF-4638-9673-6F105DE6C414}.Release|x64.ActiveCfg = Release|Win32
+		{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}.Debug|Win32.Build.0 = Debug|Win32
+		{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}.Debug|x64.ActiveCfg = Debug|Win32
+		{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}.Release|Win32.ActiveCfg = Release|Win32
+		{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}.Release|Win32.Build.0 = Release|Win32
+		{8688AEF4-D32B-48EA-A7C2-1B60FDD81F05}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
