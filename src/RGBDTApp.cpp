@@ -39,9 +39,9 @@ void print_help()
 	cerr << " -vf : visualise features" << endl;
 	cerr << " -fs : start frame" << endl;
 	cerr << " -fe : end frame" << endl;
-	cerr << " -co : color off" << endl;
-	cerr << " -do : depth off" << endl;
-	cerr << " -to : thermal off" << endl;
+	cerr << " -co : color on" << endl;
+	cerr << " -do : depth on" << endl;
+	cerr << " -to : thermal on" << endl;
 	cerr << " -vo : verbose off" << endl;
 }
 
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	bool show_images = false;
 	bool show_feature_images = false;
 	bool save_feature_image = false;
-	bool use_color = true, use_depth = true, use_thermal = true;
+	bool use_color = false, use_depth = false, use_thermal = false;
 	int pyramid_depth = -1;
 	int thermal_device = -1;
 	int start_frame = 0, end_frame = -1;
@@ -83,9 +83,9 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i],"-sfi")==0) { save_feature_image = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
 		else if (strcmp(argv[i],"-vf")==0) { show_feature_images = true; }
-		else if (strcmp(argv[i],"-co")==0) { use_color = false; }
-		else if (strcmp(argv[i],"-do")==0) { use_depth = false; }
-		else if (strcmp(argv[i],"-to")==0) { use_thermal = false; }
+		else if (strcmp(argv[i],"-co")==0) { use_color = true; }
+		else if (strcmp(argv[i],"-do")==0) { use_depth = true; }
+		else if (strcmp(argv[i],"-to")==0) { use_thermal = true; }
 		else if (strcmp(argv[i],"-vo")==0) { verbose = false; }
 		else if (strcmp(argv[i],"-h")==0)	{ print_help();	}
 		else if ((strcmp(argv[i],"-sk")==0) && (i < (argc-2))) 
@@ -108,8 +108,16 @@ int main(int argc, char **argv)
 	}
 	else // use sensor
 	{
-		input_device = new LinLib::CDTDevice();
-		input_device->ThermalDevice(thermal_device);
+		try
+		{
+			input_device = new LinLib::CDTDevice();
+			input_device->ThermalDevice(thermal_device);
+		}
+		catch (LinLib::Exception* exc)
+		{ 
+			cerr << exc->what() << endl;
+			exit(1); 
+		}
 	}
 
 	input_device->UseColor(use_color);
@@ -124,6 +132,11 @@ int main(int argc, char **argv)
 
 	try { input_device->Init(); }
 	catch (LinLib::Exception*) { cerr << "Could not initialise the input device." << endl; exit(1); }
+
+	if (use_color)
+		((LinLib::CDTDevice*)input_device)->SetVideoMode(openni::SENSOR_COLOR, 4); 
+	if (use_depth) //use 100 um scale
+		((LinLib::CDTDevice*)input_device)->SetVideoMode(openni::SENSOR_DEPTH, 5); 
 
 	cv::Mat color_feature, depth_feature, thermal_feature, feature_matrix;
 
@@ -143,7 +156,7 @@ int main(int argc, char **argv)
 
 		//test speed
 
-		if (1)
+		if (0)
 		{
 			int iterations = 1000;
 			DWORD start = ::GetTickCount();
@@ -153,7 +166,7 @@ int main(int argc, char **argv)
 			cerr << "Feature calculated in " << double(::GetTickCount() - start)/iterations << " ms" << endl;
 		}
 
-		if (1)
+		if (0)
 		{
 			int iterations = 1000;
 			DWORD start = ::GetTickCount();
@@ -207,7 +220,8 @@ int main(int argc, char **argv)
 			if (input_device->ColorFrame().data)
 				cv::imshow("color", input_device->ColorFrame().clone());
 			if (input_device->DepthFrame().data)
-				cv::imshow("depth", input_device->DepthFrame()*65535/10000);
+//				cv::imshow("depth", input_device->DepthFrame()*65535/10000);
+				cv::imshow("depth", input_device->DepthFrame());
 			if (input_device->ThermalFrame().data)
 				cv::imshow("thermal", input_device->ThermalFrame().clone());
 		}

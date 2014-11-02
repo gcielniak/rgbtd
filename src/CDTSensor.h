@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include <boost/filesystem.hpp>
+#include "Camera.h"
 
 namespace LinLib
 {
@@ -175,8 +176,12 @@ namespace LinLib
 					kinect_camera.ColorStream->Start();
 				if (use_depth)
 					kinect_camera.DepthStream->Start();
-				kinect_camera.ListModes();
 			}			
+		}
+
+		void SetVideoMode(SensorType type, int mode)
+		{
+			kinect_camera.SetVideoMode(type, mode);
 		}
 
 		virtual void GrabAllImages()
@@ -237,10 +242,10 @@ namespace LinLib
 		virtual void GrabAllImages()
 		{
 			if ((end_frame != -1) && (reading_step >= end_frame))
-				throw new Exception("CDTFile::GrabAllImages, reached the end frame.");;
+				throw new Exception("CDTFile::GrabAllImages, reached the end frame.");
 
 			std::stringstream s;
-			s << std::setw(5) << std::setfill('0') << reading_step;
+			s << std::setw(7) << std::setfill('0') << reading_step;
 
 			if (use_color)
 			{
@@ -275,7 +280,7 @@ namespace LinLib
 			if (skip_steps >= skip_frames)
 			{
 				std::stringstream s;
-				s << std::setw(5) << std::setfill('0') << recording_step_skip;
+				s << std::setw(7) << std::setfill('0') << recording_step_skip;
 				if (color_image.data)
 					cv::imwrite(path + "color" + s.str() + ".png", color_image);
 				if (depth_image.data)
@@ -313,7 +318,7 @@ namespace LinLib
 			if (skip_steps >= skip_frames)
 			{
 				std::stringstream s;
-				s << std::setw(5) << std::setfill('0') << recording_step_skip;
+				s << std::setw(7) << std::setfill('0') << recording_step_skip;
 
 				if (color_feature.data)
 				{
@@ -350,7 +355,7 @@ namespace LinLib
 			if (skip_steps >= skip_frames)
 			{
 				std::stringstream s;
-				s << std::setw(5) << std::setfill('0') << recording_step_skip;
+				s << std::setw(7) << std::setfill('0') << recording_step_skip;
 				if (color_image.data)
 					cv::imwrite(path + "cfeature" + s.str() + ".png", color_image);
 				if (depth_image.data)

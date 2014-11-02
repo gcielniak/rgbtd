@@ -13,18 +13,20 @@ namespace LinLib
 	/// OpenNI Stream class providing color, depth and ir data
 	class Stream
 	{
-		const Device *device;
+		Device *device;
 		VideoStream stream;
 		VideoFrameRef frame_ref;
 		cv::Mat frame_cv;
 		bool running;
-	
+		SensorType type;
+
 	public:
 		/// Constructor
-		Stream(const openni::Device *_device, SensorType type)
+		Stream(openni::Device *_device, SensorType _type)
 		{
 			running = false;
 			device = _device;
+			type = _type;
 			if (stream.create(*device, type) != STATUS_OK)
 				throw new Exception("OpenNICamera::Init: " + string(OpenNI::getExtendedError()));
 		}
@@ -51,6 +53,18 @@ namespace LinLib
 				stream.stop();
 		}
 
+		void SetVideoMode(int mode)
+		{
+			const Array<VideoMode>& modes = device->getSensorInfo(type)->getSupportedVideoModes();
+
+			if (mode < modes.getSize())
+			{
+				stream.stop();
+				stream.setVideoMode(modes[mode]);
+				stream.start();
+			}
+		}
+
 		/// Get image in OpenCV format
 
 		cv::Mat GetFrame()
@@ -62,26 +76,27 @@ namespace LinLib
 			// perform format conversion
 			switch (stream.getVideoMode().getPixelFormat())
 			{
-				case PIXEL_FORMAT_YUV422:
-					frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC3);
-					yuv_frame = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC2, (char*)frame_ref.getData());
-					cv::cvtColor(yuv_frame, frame_cv, CV_YUV2BGR_Y422);
-					break;
-				case PIXEL_FORMAT_GRAY16:
-					frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_16UC1, (char*)frame_ref.getData());
-					break;
-				case PIXEL_FORMAT_GRAY8:
-					frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC1, (char*)frame_ref.getData());
-					break;
-				case PIXEL_FORMAT_RGB888:
-					frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC3, (char*)frame_ref.getData());
-					cv::cvtColor(frame_cv, frame_cv, CV_BGR2RGB);
-					break;
-				case PIXEL_FORMAT_DEPTH_1_MM:
-					frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_16UC1, (char*)frame_ref.getData());
-					break;
-				default:
-					throw new Exception("Stream::GetFrame: unsupported pixel format.");
+			case PIXEL_FORMAT_YUV422:
+				frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC3);
+				yuv_frame = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC2, (char*)frame_ref.getData());
+				cv::cvtColor(yuv_frame, frame_cv, CV_YUV2BGR_Y422);
+				break;
+			case PIXEL_FORMAT_GRAY16:
+				frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_16UC1, (char*)frame_ref.getData());
+				break;
+			case PIXEL_FORMAT_GRAY8:
+				frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC1, (char*)frame_ref.getData());
+				break;
+			case PIXEL_FORMAT_RGB888:
+				frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_8UC3, (char*)frame_ref.getData());
+				cv::cvtColor(frame_cv, frame_cv, CV_BGR2RGB);
+				break;
+			case PIXEL_FORMAT_DEPTH_1_MM:
+			case PIXEL_FORMAT_DEPTH_100_UM:
+				frame_cv = cv::Mat(frame_ref.getHeight(), frame_ref.getWidth(), CV_16UC1, (char*)frame_ref.getData());
+				break;
+			default:
+				throw new Exception("Stream::GetFrame: unsupported pixel format.");
 			}
 
 			cv::flip(frame_cv, frame_cv, 1);
@@ -109,7 +124,7 @@ namespace LinLib
 				number_of_devices++;
 			}
 		}
-	
+
 	public:
 		/// Default constructor
 		OpenNICamera()
@@ -219,6 +234,23 @@ namespace LinLib
 			SensorInfoString(device.getSensorInfo(SENSOR_DEPTH));
 			cerr << "IR sensor modes" << endl;
 			SensorInfoString(device.getSensorInfo(SENSOR_IR));
+		}
+
+		void SetVideoMode(SensorType type, int mode)
+		{
+
+			if (type == SENSOR_COLOR)
+			{
+				ColorStream->SetVideoMode(mode);
+			}
+			else if (type == SENSOR_DEPTH)
+			{
+				DepthStream->SetVideoMode(mode);
+			}
+			else if (type == SENSOR_IR)
+			{
+				IrStream->SetVideoMode(mode);
+			}
 		}
 
 		Stream *ColorStream;

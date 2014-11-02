@@ -4,7 +4,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <OPENCV_DIR>H:\Greg\opencv\build</OPENCV_DIR>
-    <OPENCV_VER>247</OPENCV_VER>
+    <OPENCV_VER>249</OPENCV_VER>
     <BOOST_DIR>H:\Greg\boost_1_55_0</BOOST_DIR>
   </PropertyGroup>
   <PropertyGroup>
