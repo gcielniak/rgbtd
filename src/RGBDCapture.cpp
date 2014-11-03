@@ -3,16 +3,16 @@
 #include <string>
 #include <stdio.h>
 #include <time.h>
-#include <boost/filesystem.hpp>
-
+#include <windows.h>
 #include "OpenNICamera.h"
 
 using namespace std;
 
-
 const string currentDateTime();
 void print_help();
 void SaveImages(const cv::Mat& color_image, const cv::Mat& depth_image);
+bool FileExists(string name);
+void CreateFullDirectory(string name);
 
 int recording_step = 0, recording_step_skip = 0, skip_out_of_frames = 1, skip_frames = 0;
 string output_data_path = ".\\data\\dataset_" + currentDateTime() + "\\";
@@ -107,8 +107,8 @@ int main(int argc, char **argv)
 
 void SaveImages(const cv::Mat& color_image, const cv::Mat& depth_image)
 {
-	if (!boost::filesystem::exists(boost::filesystem::path(output_data_path)))
-		boost::filesystem::create_directories(boost::filesystem::path(output_data_path));
+	if (!FileExists(output_data_path))
+		CreateFullDirectory(output_data_path);
 
 	int skip_steps = (recording_step % skip_out_of_frames);
 	if (skip_steps >= skip_frames)
@@ -148,3 +148,31 @@ const std::string currentDateTime() {
 	return buf;
 }
 
+bool FileExists(string name)
+{
+	wstringstream ws;
+	ws << name.c_str();
+	wstring wname = ws.str();
+   WIN32_FIND_DATA FindFileData;
+   HANDLE handle = FindFirstFile(wname.c_str(), &FindFileData) ;
+   if(handle != INVALID_HANDLE_VALUE) 
+   {
+       FindClose(handle);
+	   return true;
+   }
+   return false;
+}
+
+void CreateFullDirectory(string name)
+{
+	unsigned int pos = 0;
+	wstringstream ws;
+	ws << name.c_str();
+	wstring wname = ws.str();
+
+	while (pos++ < name.size())
+	{
+		pos = wname.find(L"\\", pos);
+		::CreateDirectory(wname.substr(0, pos).c_str(), 0);
+	}
+}
