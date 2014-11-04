@@ -81,7 +81,7 @@ public:
 int main(int argc, char **argv)
 {
 	string input_data_path = "";
-	bool save_images = false;
+	bool write_images = false;
 	bool show_images = true;
 	bool verbose = true;
 	int step = 0;
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	for (int i = 1; i < argc; i++)
 	{
 		if ((strcmp(argv[i],"-ip")==0) && (i < (argc-1))) { input_data_path = argv[++i]; }
-		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
+		else if (strcmp(argv[i],"-si")==0) { write_images = true; }
 		else if (strcmp(argv[i],"-vi")==0) { show_images = true; }
 		else if (strcmp(argv[i],"-vo")==0) { verbose = false; }
 		else if (strcmp(argv[i],"-h")==0)	{ print_help();	}

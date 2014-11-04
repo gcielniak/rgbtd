@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 {
 	string input_data_path = "";
 	string output_data_path = ".\\data\\dataset_" + currentDateTime() + "\\";
-	bool save_images = false;
+	bool write_images = false;
 	bool save_features_raw = false;
 	bool save_features_xml = false;
 	bool show_images = false;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		else if ((strcmp(argv[i],"-pd")==0) && (i < (argc-1))) { pyramid_depth = atoi(argv[++i]); }
 		else if ((strcmp(argv[i],"-fs")==0) && (i < (argc-1))) { start_frame = atoi(argv[++i]); }
 		else if ((strcmp(argv[i],"-fe")==0) && (i < (argc-1))) { end_frame = atoi(argv[++i]); }
-		else if (strcmp(argv[i],"-si")==0) { save_images = true; }
+		else if (strcmp(argv[i],"-si")==0) { write_images = true; }
 		else if (strcmp(argv[i],"-sf")==0) { save_features_raw = true; }
 		else if (strcmp(argv[i],"-sfx")==0) { save_features_xml = true; }
 		else if (strcmp(argv[i],"-sfi")==0) { save_feature_image = true; }
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 			cerr << "Feature calculated in " << double(::GetTickCount() - start)/iterations << " ms" << endl;
 		}
 
-		if (save_images)
+		if (write_images)
 			image_writer.SaveImages(input_device->ColorFrame(), input_device->DepthFrame(), input_device->ThermalFrame());
 
 		if (save_features_raw || save_features_xml)

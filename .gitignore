@@ -21,8 +21,13 @@ matlab/*.mat
 *.sdf
 *.vcxproj.filters
 *.vcxproj.user
+*.opensdf
 
 #codeblocks files
 */*/*.layout
 */*/*.depend
+
+#local folders
+local
+
 

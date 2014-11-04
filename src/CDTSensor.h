@@ -181,7 +181,18 @@ namespace LinLib
 
 		void SetVideoMode(SensorType type, int mode)
 		{
-			kinect_camera.SetVideoMode(type, mode);
+			switch (type)
+			{
+			case SensorType::SENSOR_COLOR:
+				kinect_camera.ColorStream->SetVideoMode(mode);
+				break;
+			case SensorType::SENSOR_DEPTH:
+				kinect_camera.DepthStream->SetVideoMode(mode);
+				break;
+			case SensorType::SENSOR_IR:
+				kinect_camera.IrStream->SetVideoMode(mode);
+				break;
+			}
 		}
 
 		virtual void GrabAllImages()
