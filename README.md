@@ -1,6 +1,4 @@
 # CDCapture
-=====
-
 ## Installation
 ### Asus Xtion Pro on Windows 8 and USB3
 
