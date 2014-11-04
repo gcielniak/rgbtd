@@ -3,9 +3,9 @@
   <ImportGroup Label="PropertySheets">
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <OPENCV_DIR>H:\Greg\opencv\build</OPENCV_DIR>
+    <OPENCV_DIR>D:\code\opencv\build</OPENCV_DIR>
     <OPENCV_VER>249</OPENCV_VER>
-    <BOOST_DIR>H:\Greg\boost_1_55_0</BOOST_DIR>
+    <BOOST_DIR>D:\code\boost_1_57_0</BOOST_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>

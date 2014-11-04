@@ -6,7 +6,6 @@
 #include <time.h>
 
 #include <opencv2/opencv.hpp>
-//#include <opencv2/contrib/contrib.hpp>
 #include "OpenNICamera.h"
 
 using namespace std;
