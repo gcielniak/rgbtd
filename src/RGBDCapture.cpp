@@ -80,6 +80,18 @@ int main(int argc, char **argv)
 	{
 		device.Open(device_nr);
 
+		//set default capture mode to 640x480, depending on the sensor
+		if (device.Name().compare("PS1080") == 0)
+		{
+			if (color_mode == -1)
+				color_mode = 4;
+			if (depth_mode == -1)
+				depth_mode = 5;
+			if (ir_mode == -1)
+				ir_mode = 4;
+		}
+
+
 		if (use_color)
 			device.ColorStream->Start();
 		if (use_depth)
@@ -93,11 +105,11 @@ int main(int argc, char **argv)
 		exit(1); 
 	}
 
-	if (device.ColorStream->Running() && (color_mode != -1))
+	if (device.ColorStream->Running())
 		device.ColorStream->SetVideoMode(color_mode); 
-	if (device.DepthStream->Running() && (depth_mode != -1))
+	if (device.DepthStream->Running())
 		device.DepthStream->SetVideoMode(depth_mode); 
-	if (device.IrStream->Running() && (ir_mode != -1))
+	if (device.IrStream->Running())
 		device.IrStream->SetVideoMode(ir_mode);
 
 	int step = 0;
@@ -142,13 +154,10 @@ int main(int argc, char **argv)
 			{
 				double depth_scale = 1.0;
 				if (device.IrStream->GetPixelFormat() == openni::PIXEL_FORMAT_GRAY16)
-					depth_scale = 65535/1022;
+					depth_scale = 65535/1022;//1024?
 				cv::imshow("ir", ir_frame*depth_scale);
 			}
 		}
-
-		if (verbose)
-			cerr << "Step " << step++ << " completed." << endl;
 	}
 
 	return 0;

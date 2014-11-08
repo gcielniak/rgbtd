@@ -230,6 +230,11 @@ namespace LinLib
 			}
 		}
 
+		string Name()
+		{
+			return device.getDeviceInfo().getName();
+		}
+
 		static string PixelFormatString(PixelFormat format)
 		{
 			switch (format)

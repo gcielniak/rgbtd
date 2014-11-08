@@ -254,9 +254,6 @@ int main(int argc, char **argv)
 			if (save_feature_image)
 				image_writer.SaveFeatureImages(color_feature_image, depth_feature_image, thermal_feature_image);
 		}
-
-		if (verbose)
-			cerr << "Step " << step++ << " completed." << endl;
 	}
 
 	//save all feature data into a matrix
