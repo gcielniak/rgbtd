@@ -6,7 +6,7 @@ set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
 
-find_package(Boost COMPONENTS filesystem date_time REQUIRED) 
+find_package(Boost COMPONENTS system filesystem date_time REQUIRED) 
 
 find_package( OpenCV REQUIRED )
 
